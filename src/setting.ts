@@ -1,4 +1,4 @@
-import { PluginSettingTab, App, Setting } from 'obsidian';
+import { PluginSettingTab, App } from 'obsidian';
 import VerticalTabsView from './main';
 
 export interface VerticalTabsViewSettings {}
@@ -18,7 +18,7 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
 
     containerEl.empty();
 
-    containerEl.createEl('h2', { text: 'My Plugin' });
+    containerEl.createEl('h2', { text: 'Vertical Tabs View' });
 
     // new Setting(containerEl)
   }

@@ -1,5 +1,5 @@
 import { Notice } from 'obsidian';
-import { name as logPrefix } from '../package.json';
+import { name as logPrefix } from '../../package.json';
 
 export const log = (message: string) => {
   console.log(`[${logPrefix}]: ${message}`);
