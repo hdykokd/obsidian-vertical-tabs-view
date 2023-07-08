@@ -1,6 +1,7 @@
 import { PluginSettingTab, App } from 'obsidian';
 import VerticalTabsView from './main';
 
+// eslint-disable-next-line
 export interface VerticalTabsViewSettings {}
 
 export const DEFAULT_SETTINGS: VerticalTabsViewSettings = {};

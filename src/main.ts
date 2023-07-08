@@ -1,4 +1,4 @@
-import { Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { Plugin } from 'obsidian';
 import { log } from './util/message';
 import { VerticalTabsViewSettings, DEFAULT_SETTINGS, VerticalTabsViewSettingTab } from './setting';
 import { VerticalTabsViewView, VIEW_TYPE_VERTICAL_TABS } from './view';
