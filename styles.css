@@ -1,8 +1,57 @@
-/*
+#vertical-tabs-view-content {
+  padding: 0;
+  margin: 2px;
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+ul.vertical-tabs-view-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-bottom: 4em;
+}
 
-If your plugin does not need CSS, delete this file.
+.vertical-tabs-view-list li {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: var(--tab-text-color);
+  font-size: var(--tab-font-size);
+  font-weight: var(--tab-font-weight);
+  padding: 2px 4px;
+  width: 100%;
+  border-radius: var(--tab-radius);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 
-*/
+.vertical-tabs-view-list li:hover {
+  color: var(--tab-text-color-focused);
+  background-color: var(--tab-background-active);
+}
+
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-close-btn {
+  color: var(--tab-text-color);
+}
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-close-btn:hover {
+  color: var(--tab-text-color-focused);
+  background-color: var(--tab-background-active);
+}
+
+.vertical-tabs-view-list li.focused {
+  color: var(--tab-text-color-focused);
+  background-color: var(--tab-background-active);
+}
+
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-name-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-left: 0.8em;
+  line-height: 1.4em;
+}
+
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-dirname {
+  color: var(--tab-text-color);
+  font-size: var(--font-ui-smaller);
+}
