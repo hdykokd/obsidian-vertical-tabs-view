@@ -1,11 +1,11 @@
 {
-	"id": "obsidian-sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.0",
-	"minAppVersion": "0.15.0",
-	"description": "This is a sample plugin for Obsidian. This plugin demonstrates some of the capabilities of the Obsidian API.",
-	"author": "hdykokd",
-	"authorUrl": "https://hdykokd.me",
-	"fundingUrl": "https://www.buymeacoffee.com/hdykokd",
-	"isDesktopOnly": false
+  "id": "vertical-tabs-view",
+  "name": "Vertical Tabs View",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "This is pllgin for Obsidian that provides a vertical view of tabs you open and recently accessed.",
+  "author": "hdykokd",
+  "authorUrl": "https://hdykokd.me",
+  "fundingUrl": "https://www.buymeacoffee.com/hdykokd",
+  "isDesktopOnly": false
 }

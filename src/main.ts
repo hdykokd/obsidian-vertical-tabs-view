@@ -1,14 +1,14 @@
 import { Plugin, PluginSettingTab, Setting } from 'obsidian';
 import { log } from './util/message';
-import { MyPluginSettings, DEFAULT_SETTINGS, MyPluginSettingTab } from './setting';
+import { VerticalTabsViewSettings, DEFAULT_SETTINGS, VerticalTabsViewSettingTab } from './setting';
 
-export default class MyPlugin extends Plugin {
-  settings: MyPluginSettings;
+export default class VerticalTabsView extends Plugin {
+  settings: VerticalTabsViewSettings;
 
   async onload() {
     log('loading...');
     await this.loadSettings();
-    this.addSettingTab(new MyPluginSettingTab(this.app, this));
+    this.addSettingTab(new VerticalTabsViewSettingTab(this.app, this));
     log('loaded.');
   }
 

@@ -1,14 +1,14 @@
 import { PluginSettingTab, App, Setting } from 'obsidian';
-import MyPlugin from './main';
+import VerticalTabsView from './main';
 
-export interface MyPluginSettings {}
+export interface VerticalTabsViewSettings {}
 
-export const DEFAULT_SETTINGS: MyPluginSettings = {};
+export const DEFAULT_SETTINGS: VerticalTabsViewSettings = {};
 
-export class MyPluginSettingTab extends PluginSettingTab {
-  plugin: MyPlugin;
+export class VerticalTabsViewSettingTab extends PluginSettingTab {
+  plugin: VerticalTabsView;
 
-  constructor(app: App, plugin: MyPlugin) {
+  constructor(app: App, plugin: VerticalTabsView) {
     super(app, plugin);
     this.plugin = plugin;
   }
