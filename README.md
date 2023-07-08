@@ -5,6 +5,20 @@
 - Provides a vertical view of tabs you open and recently accessed
 - (Not Implemented): Provides a vertical view of tabs recently accessed
 
+## Installation
+
+### BRAT
+
+1. Install [Obsidian BRAT](https://github.com/TfTHacker/obsidian42-brat) plugin.
+2. Select the `Obsidian42 - BRAT: Add a beta plugin for testing` command
+3. Paste in `hdykokd/obsidian-vertical-tabs-view` into the text field
+
+### Manual
+
+1. Download `main.js`, `styles.css`, `manifest.json` from the Release page.
+2. Create a plugin directory in your vault. `/path/to/your/vault/.obsidian/plugins/vertical-tabs-view`
+3. Place `main.js`, `styles.css`, `manifest.json` in the vertical-tabs-view directory.
+
 ## Screenshots
 
 ### Using with [Hider](https://github.com/kepano/obsidian-hider) plugin
