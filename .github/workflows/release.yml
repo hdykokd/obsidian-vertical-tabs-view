@@ -28,4 +28,5 @@ jobs:
           draft: true
           files: |
             main.js
+            styles.css
             manifest.json
