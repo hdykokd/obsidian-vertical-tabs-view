@@ -13,7 +13,7 @@ ul.vertical-tabs-view-list {
 .vertical-tabs-view-list li {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  justify-content: space-between;
   color: var(--tab-text-color);
   font-size: var(--tab-font-size);
   font-weight: var(--tab-font-weight);
@@ -25,17 +25,36 @@ ul.vertical-tabs-view-list {
   text-overflow: ellipsis;
 }
 
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-left-container,
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-right-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-right-container {
+  margin-top: 0.5em;
+  margin-right: 0.5em;
+}
+
 .vertical-tabs-view-list li:hover {
   color: var(--tab-text-color-focused);
   background-color: var(--tab-background-active);
 }
 
-.vertical-tabs-view-list li .vertical-tabs-view-list-item-close-btn {
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-close-btn,
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn {
   color: var(--tab-text-color);
 }
-.vertical-tabs-view-list li .vertical-tabs-view-list-item-close-btn:hover {
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-close-btn:hover,
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn:hover {
   color: var(--tab-text-color-focused);
   background-color: var(--tab-background-active);
+}
+
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn {
+  --icon-size: var(--icon-xs);
+  --icon-stroke: var(--icon-xs-stroke-width);
 }
 
 .vertical-tabs-view-list li.focused {

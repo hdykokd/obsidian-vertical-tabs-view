@@ -1,4 +1,5 @@
 import { ItemView, setIcon, WorkspaceLeaf } from 'obsidian';
+import VerticalTabsView from './main';
 
 const VIEW_PREFIX = 'vertical-tabs-view';
 const VIEW_CONTAINER_ID = VIEW_PREFIX + '-container';
@@ -7,8 +8,11 @@ const VIEW_CONTENT_ID = VIEW_PREFIX + '-content';
 export const VIEW_TYPE_VERTICAL_TABS = 'view-type-vertical-tabs-view';
 
 export class VerticalTabsViewView extends ItemView {
-  constructor(leaf: WorkspaceLeaf) {
+  plugin: VerticalTabsView;
+
+  constructor(plugin: VerticalTabsView, leaf: WorkspaceLeaf) {
     super(leaf);
+    this.plugin = plugin;
 
     this.updateView();
 
@@ -77,6 +81,14 @@ export class VerticalTabsViewView extends ItemView {
     // @ts-expect-error
     const leaves = this.app.workspace.getLeavesOfType('markdown').filter((l) => leavesInMain.includes(l.id));
 
+    const createPinIcon = (icon: 'pin' | 'pin-off', onClick: GlobalEventHandlers['onclick']) => {
+      const pinBtn = document.createElement('div');
+      pinBtn.className = `vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-${icon}`;
+      setIcon(pinBtn, icon);
+      pinBtn.onclick = onClick;
+      return pinBtn;
+    };
+
     leaves.forEach((leaf) => {
       const listItem = document.createElement('li');
       listItem.className = 'vertical-tabs-view-list-item';
@@ -89,6 +101,13 @@ export class VerticalTabsViewView extends ItemView {
         this.app.workspace.setActiveLeaf(leaf);
       };
 
+      const listItemLeftContainer = document.createElement('div');
+      listItemLeftContainer.className = 'vertical-tabs-view-list-item-left-container';
+      listItemLeftContainer.setChildrenInPlace([]);
+      const listItemRightContainer = document.createElement('div');
+      listItemRightContainer.className = 'vertical-tabs-view-list-item-right-container';
+      listItemRightContainer.setChildrenInPlace([]);
+
       // close button
       const closeBtn = document.createElement('div');
       closeBtn.className = 'vertical-tabs-view-list-item-close-btn';
@@ -96,29 +115,41 @@ export class VerticalTabsViewView extends ItemView {
       closeBtn.onclick = () => {
         leaf.detach();
       };
-      listItem.appendChild(closeBtn);
 
+      // dir / title
       const listItemNameContainer = document.createElement('div');
       listItemNameContainer.className = 'vertical-tabs-view-list-item-name-container';
 
+      // @ts-expect-error
+      const file = leaf.view.file;
+
       const dirname = document.createElement('span');
       dirname.className = 'vertical-tabs-view-list-item-dirname';
-      // @ts-expect-error
-      dirname.innerText = leaf.view.file.parent.path;
+      dirname.innerText = file.parent.path;
       const title = document.createElement('span');
       title.className = 'vertical-tabs-view-list-item-title';
-      // @ts-expect-error
-      title.innerText = leaf.view.file.name.split('.').slice(0, -1);
+      title.innerText = file.name.split('.').slice(0, -1);
       listItemNameContainer.setChildrenInPlace([dirname, title]);
 
-      listItem.appendChild(listItemNameContainer);
+      listItemLeftContainer.setChildrenInPlace([closeBtn, listItemNameContainer]);
 
-      // if (leaf.pinned) {
-      //   const pinBtn = document.createElement('div');
-      //   pinBtn.className = 'vertical-tabs-view-list-item-pin-btn';
-      //   setIcon(pinBtn, 'pin');
-      //   listItem.appendChild(pinBtn);
-      // }
+      // pin button
+      // @ts-expect-error
+      const pinned = leaf.pinned;
+      if (this.plugin.settings.showPinnedIcon && pinned) {
+        const pinnedBtn = createPinIcon('pin', () => {
+          leaf.setPinned(false);
+        });
+        listItemRightContainer.appendChild(pinnedBtn);
+      }
+      if (this.plugin.settings.showPinIconIfNotPinned && !pinned) {
+        const pinnedBtn = createPinIcon('pin-off', () => {
+          leaf.setPinned(true);
+        });
+        listItemRightContainer.appendChild(pinnedBtn);
+      }
+
+      listItem.setChildrenInPlace([listItemLeftContainer, listItemRightContainer]);
 
       ul.appendChild(listItem);
     });

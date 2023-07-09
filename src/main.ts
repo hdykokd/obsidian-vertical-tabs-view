@@ -31,7 +31,7 @@ export default class VerticalTabsView extends Plugin {
 
   registerViewExtension() {
     this.registerView(VIEW_TYPE_VERTICAL_TABS, (leaf) => {
-      return new VerticalTabsViewView(leaf);
+      return new VerticalTabsViewView(this, leaf);
     });
     this.addCommand({
       id: 'vertical-tabs-view-show',
