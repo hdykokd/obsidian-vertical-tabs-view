@@ -37,17 +37,31 @@ export default class VerticalTabsView extends Plugin {
       id: 'vertical-tabs-view-show',
       name: 'Show vertical tabs view',
       editorCallback: async () => {
-        const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_VERTICAL_TABS);
-        if (leaves[0]) {
-          return this.app.workspace.revealLeaf(leaves[0]);
-        }
-        const leaf = this.app.workspace.getLeftLeaf(false);
-        await leaf.setViewState({
-          type: VIEW_TYPE_VERTICAL_TABS,
-          active: true,
-        });
-        this.app.workspace.revealLeaf(leaf);
+        this.openViewLeaf();
       },
     });
+  }
+
+  async openViewLeaf() {
+    const getLeaf = () => {
+      if (this.settings.defaultPosition === 'left') {
+        return this.app.workspace.getLeftLeaf(false);
+      }
+      if (this.settings.defaultPosition === 'right') {
+        return this.app.workspace.getRightLeaf(false);
+      }
+      return this.app.workspace.getLeftLeaf(false);
+    };
+
+    const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_VERTICAL_TABS);
+    if (leaves[0]) {
+      return this.app.workspace.revealLeaf(leaves[0]);
+    }
+    const leaf = getLeaf();
+    await leaf.setViewState({
+      type: VIEW_TYPE_VERTICAL_TABS,
+      active: true,
+    });
+    this.app.workspace.revealLeaf(leaf);
   }
 }

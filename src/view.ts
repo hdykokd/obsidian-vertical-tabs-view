@@ -32,12 +32,11 @@ export class VerticalTabsViewView extends ItemView {
   }
 
   getIcon() {
-    // FIXME
-    return 'file-type';
+    return 'list';
   }
 
   getDisplayText() {
-    return 'vertical tabs view';
+    return 'Vertical Tabs';
   }
 
   async onClose() {
