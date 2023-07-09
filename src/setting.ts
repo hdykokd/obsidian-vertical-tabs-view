@@ -1,6 +1,6 @@
 import { PluginSettingTab, App } from 'obsidian';
 import VerticalTabsView from './main';
-import { createSelect, createToggle } from './util/setting';
+import { createSelect } from './util/setting';
 
 export const DEFAULT_POSITION_OPTIONS = {
   left: 'left',
