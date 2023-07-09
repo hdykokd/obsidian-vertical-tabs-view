@@ -9,6 +9,9 @@ export const VIEW_TYPE_VERTICAL_TABS = 'view-type-vertical-tabs-view';
 export class VerticalTabsViewView extends ItemView {
   constructor(leaf: WorkspaceLeaf) {
     super(leaf);
+
+    this.updateView();
+
     this.registerEvent(
       this.app.workspace.on('layout-change', () => {
         this.updateView();

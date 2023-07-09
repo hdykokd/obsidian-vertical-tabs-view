@@ -41,7 +41,7 @@ export default class VerticalTabsView extends Plugin {
         if (leaves[0]) {
           return this.app.workspace.revealLeaf(leaves[0]);
         }
-        const leaf = this.app.workspace.getRightLeaf(false);
+        const leaf = this.app.workspace.getLeftLeaf(false);
         await leaf.setViewState({
           type: VIEW_TYPE_VERTICAL_TABS,
           active: true,
