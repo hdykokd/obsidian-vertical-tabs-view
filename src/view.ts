@@ -1,4 +1,4 @@
-import { ItemView, setIcon, WorkspaceLeaf, WorkspaceTabs } from 'obsidian';
+import { ItemView, setIcon, WorkspaceLeaf } from 'obsidian';
 
 const VIEW_PREFIX = 'vertical-tabs-view';
 const VIEW_CONTAINER_ID = VIEW_PREFIX + '-container';
