@@ -1,4 +1,4 @@
-import { ItemView, setIcon, WorkspaceLeaf } from 'obsidian';
+import { ItemView, setIcon, WorkspaceLeaf, WorkspaceTabs } from 'obsidian';
 
 const VIEW_PREFIX = 'vertical-tabs-view';
 const VIEW_CONTAINER_ID = VIEW_PREFIX + '-container';
@@ -61,7 +61,21 @@ export class VerticalTabsViewView extends ItemView {
     const ul = document.createElement('ul');
     ul.className = 'vertical-tabs-view-list';
 
-    const leaves = this.app.workspace.getLeavesOfType('markdown');
+    const walk = (nodes: any[], leaves: any[] = []) => {
+      nodes.forEach((node) => {
+        if (node.type === 'leaf') {
+          leaves.push(node.id);
+        } else if (node.type === 'tabs' && 'children' in node) {
+          return walk((node as any).children, leaves);
+        }
+      });
+      return leaves;
+    };
+
+    const layout = this.app.workspace.getLayout();
+    const leavesInMain: string[] = walk(layout.main.children, []);
+    // @ts-expect-error
+    const leaves = this.app.workspace.getLeavesOfType('markdown').filter((l) => leavesInMain.includes(l.id));
 
     leaves.forEach((leaf) => {
       const listItem = document.createElement('li');
