@@ -32,6 +32,10 @@ ul.vertical-tabs-view-list {
   align-items: center;
 }
 
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-left-container {
+  width: 90%;
+}
+
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-right-container {
   margin-top: 0.5em;
   margin-right: 0.5em;
@@ -67,7 +71,16 @@ ul.vertical-tabs-view-list {
   flex-direction: column;
   justify-content: space-between;
   margin-left: 0.8em;
+  padding-right: 0.8em;
   line-height: 1.4em;
+  width: inherit;
+}
+
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-dirname,
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-dirname {
