@@ -1,6 +1,6 @@
 {
   "name": "obsidian-vertical-tabs-view",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "This is pllgin for Obsidian (https://obsidian.md) that provides a vertical view of tabs you open and recently accessed.",
   "main": "main.js",
   "scripts": {
