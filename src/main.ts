@@ -2,10 +2,11 @@ import { Plugin } from 'obsidian';
 import { log } from './util/message';
 import { VerticalTabsViewSettings, DEFAULT_SETTINGS, VerticalTabsViewSettingTab } from './setting';
 import { VerticalTabsViewView, VIEW_TYPE_VERTICAL_TABS } from './view';
-import { Leaf } from './type';
 
 export default class VerticalTabsView extends Plugin {
   settings: VerticalTabsViewSettings;
+
+  private view: VerticalTabsViewView;
 
   async onload() {
     log('loading...');
@@ -29,6 +30,7 @@ export default class VerticalTabsView extends Plugin {
 
   async saveSettings() {
     await this.saveData(this.settings);
+    this.view.updateView();
   }
 
   addCommands() {
@@ -43,7 +45,8 @@ export default class VerticalTabsView extends Plugin {
 
   registerViewExtension() {
     this.registerView(VIEW_TYPE_VERTICAL_TABS, (leaf) => {
-      return new VerticalTabsViewView(this, leaf as Leaf);
+      this.view = new VerticalTabsViewView(this.settings, leaf);
+      return this.view;
     });
   }
 
