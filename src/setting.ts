@@ -139,7 +139,7 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
     return { previewIconWrapper, previewIcon, previewIconText };
   }
 
-  addTabIconConfig(parentEl: HTMLElement, config: TabIconConfigBase, index: number) {
+  addTabIconConfig(parentEl: HTMLElement, config: TabIconConfig, index: number) {
     const wrapperEl = parentEl.createEl('div');
     wrapperEl.style.border = '1px solid var(--background-modifier-border)';
     wrapperEl.style.padding = '1em';
