@@ -1,5 +1,18 @@
 import { Setting } from 'obsidian';
 
+export const createText = (
+  containerEl: HTMLElement,
+  name: string,
+  desc: string,
+  initialValue: string,
+  onChange: (value: string) => void,
+) => {
+  return new Setting(containerEl)
+    .setName(name)
+    .setDesc(desc)
+    .addText((text) => text.setValue(initialValue).onChange(onChange));
+};
+
 export const createToggle = (
   containerEl: HTMLElement,
   name: string,

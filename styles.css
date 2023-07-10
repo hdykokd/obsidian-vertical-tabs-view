@@ -39,7 +39,6 @@ ul.vertical-tabs-view-list {
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-right-container {
   flex-shfrink: 0;
-  margin-top: 0.2em;
 }
 
 .vertical-tabs-view-list li:hover {
@@ -70,8 +69,10 @@ ul.vertical-tabs-view-list {
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn {
   width: 2em;
-  height: 2em;
   margin-left: 0.5em;
+  margin-top: 0.5em;
+  --icon-size: var(--icon-xs);
+  --icon-stroke: var(--icon-xs-stroke-width);
 }
 
 .vertical-tabs-view-list li.focused {
