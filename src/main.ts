@@ -33,7 +33,7 @@ export default class VerticalTabsView extends Plugin {
 
   addCommands() {
     this.addCommand({
-      id: 'vertical-tabs-view-show',
+      id: 'show-vertical-tabs-view',
       name: 'Show vertical tabs view',
       callback: async () => {
         this.openViewLeaf();
