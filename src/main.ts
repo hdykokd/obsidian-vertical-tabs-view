@@ -2,6 +2,7 @@ import { Plugin } from 'obsidian';
 import { log } from './util/message';
 import { VerticalTabsViewSettings, DEFAULT_SETTINGS, VerticalTabsViewSettingTab } from './setting';
 import { VerticalTabsViewView, VIEW_TYPE_VERTICAL_TABS } from './view';
+import { Leaf } from './type';
 
 export default class VerticalTabsView extends Plugin {
   settings: VerticalTabsViewSettings;
@@ -10,6 +11,7 @@ export default class VerticalTabsView extends Plugin {
     log('loading...');
     await this.loadSettings();
     this.addSettingTab(new VerticalTabsViewSettingTab(this.app, this));
+    this.addCommands();
     this.app.workspace.onLayoutReady(async () => {
       this.registerViewExtension();
     });
@@ -29,16 +31,19 @@ export default class VerticalTabsView extends Plugin {
     await this.saveData(this.settings);
   }
 
-  registerViewExtension() {
-    this.registerView(VIEW_TYPE_VERTICAL_TABS, (leaf) => {
-      return new VerticalTabsViewView(this, leaf);
-    });
+  addCommands() {
     this.addCommand({
       id: 'vertical-tabs-view-show',
       name: 'Show vertical tabs view',
-      editorCallback: async () => {
+      callback: async () => {
         this.openViewLeaf();
       },
+    });
+  }
+
+  registerViewExtension() {
+    this.registerView(VIEW_TYPE_VERTICAL_TABS, (leaf) => {
+      return new VerticalTabsViewView(this, leaf as Leaf);
     });
   }
 
