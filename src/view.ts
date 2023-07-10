@@ -99,7 +99,7 @@ export class VerticalTabsViewView extends ItemView {
       nodes.forEach((node) => {
         if (node.type === 'leaf') {
           leaves.push(node.id);
-        } else if (node.type === 'tabs' && 'children' in node) {
+        } else if ('children' in node) {
           return walk((node as any).children, leaves);
         }
       });
