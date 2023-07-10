@@ -12,12 +12,14 @@ export interface VerticalTabsViewSettings {
   defaultPosition: (typeof DEFAULT_POSITION_OPTIONS)[keyof typeof DEFAULT_POSITION_OPTIONS];
   showPinnedIcon: boolean;
   showPinIconIfNotPinned: boolean;
+  showTabIcon: boolean;
 }
 
 export const DEFAULT_SETTINGS: VerticalTabsViewSettings = {
   defaultPosition: 'left',
   showPinnedIcon: true,
   showPinIconIfNotPinned: true,
+  showTabIcon: true,
 };
 
 export class VerticalTabsViewSettingTab extends PluginSettingTab {
@@ -60,5 +62,9 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
         this.plugin.saveSettings();
       },
     );
+    createToggle(containerEl, 'Show tab icon', '', this.plugin.settings.showTabIcon, (value) => {
+      this.plugin.settings.showTabIcon = value;
+      this.plugin.saveSettings();
+    });
   }
 }

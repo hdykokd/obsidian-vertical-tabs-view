@@ -47,11 +47,21 @@ ul.vertical-tabs-view-list {
   background-color: var(--tab-background-active);
 }
 
-.vertical-tabs-view-list li .vertical-tabs-view-list-item-close-btn,
-.vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn {
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-icon {
   color: var(--tab-text-color);
   padding-top: 0.25em;
 }
+
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-tab-icon {
+  margin-right: 0.25em;
+  --icon-size: var(--icon-xs);
+  --icon-stroke: var(--icon-xs-stroke-width);
+}
+
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-close-btn {
+  margin-right: 0.25em;
+}
+
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-close-btn:hover,
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn:hover {
   color: var(--tab-text-color-focused);
@@ -73,7 +83,7 @@ ul.vertical-tabs-view-list {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin-left: 0.5em;
+  margin-left: 0.25em;
   line-height: 1.4em;
   width: 100%;
   overflow: hidden;

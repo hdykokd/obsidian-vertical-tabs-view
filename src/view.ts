@@ -98,7 +98,7 @@ export class VerticalTabsViewView extends ItemView {
 
     leaves.forEach((leaf: Leaf) => {
       const listItem = document.createElement('li');
-      listItem.className = 'vertical-tabs-view-list-item';
+      listItem.className = 'vertical-tabs-view-list-item vertical-tabs-view-list-item-icon';
       if (activeLeaf && (activeLeaf as Leaf).id === leaf.id) {
         listItem.className += ' focused';
       }
@@ -115,7 +115,7 @@ export class VerticalTabsViewView extends ItemView {
 
       // close button
       const closeBtn = document.createElement('div');
-      closeBtn.className = 'vertical-tabs-view-list-item-close-btn';
+      closeBtn.className = 'vertical-tabs-view-list-item-close-btn vertical-tabs-view-list-item-icon';
       setIcon(closeBtn, 'x');
       closeBtn.onclick = () => {
         leaf.detach();
@@ -127,9 +127,14 @@ export class VerticalTabsViewView extends ItemView {
       // @ts-expect-error
       const file = leaf.view.file;
 
+      // tab icon
+      const icon = leaf.tabHeaderInnerIconEl.cloneNode(true) as HTMLElement;
+      icon.className = 'vertical-tabs-view-list-item-tab-icon vertical-tabs-view-list-item-icon';
+
       // dir
       const dirname = file ? file.parent.path : '';
       if (dirname) {
+        setIcon(icon, 'file');
         const dirnameEl = document.createElement('span');
         dirnameEl.className = 'vertical-tabs-view-list-item-dirname';
         dirnameEl.innerText = dirname;
@@ -143,7 +148,9 @@ export class VerticalTabsViewView extends ItemView {
       titleEl.innerText = title;
       listItemNameContainer.appendChild(titleEl);
 
-      listItemLeftContainer.setChildrenInPlace([closeBtn, listItemNameContainer]);
+      listItemLeftContainer.setChildrenInPlace(
+        [closeBtn, this.plugin.settings.showTabIcon ? icon : null, listItemNameContainer].filter((v) => v) as Node[],
+      );
 
       // pin button
       const pinned = leaf.pinned;

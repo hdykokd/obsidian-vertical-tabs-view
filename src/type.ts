@@ -4,4 +4,5 @@ export type Leaf = WorkspaceLeaf & {
   id: string;
   pinned: boolean;
   tabHeaderEl: HTMLElement;
+  tabHeaderInnerIconEl: HTMLElement;
 };
