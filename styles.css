@@ -10,14 +10,14 @@ ul.vertical-tabs-view-list {
   margin-bottom: 4em;
 }
 
-.vertical-tabs-view-list li {
+.vertical-tabs-view-list li.vertical-tabs-view-list-item {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   color: var(--tab-text-color);
   font-size: var(--tab-font-size);
   font-weight: var(--tab-font-weight);
-  padding: 2px 4px;
+  padding: 2px 0 2px 2px;
   width: 100%;
   border-radius: var(--tab-radius);
   overflow: hidden;
@@ -33,12 +33,13 @@ ul.vertical-tabs-view-list {
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-left-container {
-  width: 90%;
+  display: flex;
+  overflow: hidden;
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-right-container {
-  margin-top: 0.5em;
-  margin-right: 0.5em;
+  flex-shfrink: 0;
+  margin-top: 0.2em;
 }
 
 .vertical-tabs-view-list li:hover {
@@ -49,6 +50,7 @@ ul.vertical-tabs-view-list {
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-close-btn,
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn {
   color: var(--tab-text-color);
+  padding-top: 0.25em;
 }
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-close-btn:hover,
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn:hover {
@@ -57,8 +59,9 @@ ul.vertical-tabs-view-list {
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn {
-  --icon-size: var(--icon-xs);
-  --icon-stroke: var(--icon-xs-stroke-width);
+  width: 2em;
+  height: 2em;
+  margin-left: 0.5em;
 }
 
 .vertical-tabs-view-list li.focused {
@@ -70,10 +73,10 @@ ul.vertical-tabs-view-list {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin-left: 0.8em;
-  padding-right: 0.8em;
+  margin-left: 0.5em;
   line-height: 1.4em;
-  width: inherit;
+  width: 100%;
+  overflow: hidden;
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-dirname,
