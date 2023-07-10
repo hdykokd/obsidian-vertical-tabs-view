@@ -9,10 +9,10 @@ export const TAB_ICON_OPTIONS = {
     title: 'title',
   },
   CONDITION: {
-    startsWith: 'startsWith',
-    endsWith: 'endsWith',
+    startsWith: 'starts with',
+    endsWith: 'ends with',
     includes: 'includes',
-    exact: 'exact',
+    equals: 'equals',
     regexp: 'regexp',
   },
 } as const;

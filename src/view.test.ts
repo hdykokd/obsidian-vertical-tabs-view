@@ -16,12 +16,12 @@ describe('VerticalTabsViewView', () => {
       [generateConfig({ target: 'directory', condition: 'startsWith', value: 'dir' }), 'dirname', 'title'],
       [generateConfig({ target: 'directory', condition: 'endsWith', value: 'name' }), 'dirname', 'title'],
       [generateConfig({ target: 'directory', condition: 'includes', value: 'ir' }), 'dirname', 'title'],
-      [generateConfig({ target: 'directory', condition: 'exact', value: 'dirname' }), 'dirname', 'title'],
+      [generateConfig({ target: 'directory', condition: 'equals', value: 'dirname' }), 'dirname', 'title'],
       [generateConfig({ target: 'directory', condition: 'regexp', value: '/^dirname$/i' }), 'dirname', 'title'],
       [generateConfig({ target: 'title', condition: 'startsWith', value: 'tit' }), 'dirname', 'title'],
       [generateConfig({ target: 'title', condition: 'endsWith', value: 'tle' }), 'dirname', 'title'],
       [generateConfig({ target: 'title', condition: 'includes', value: 'itl' }), 'dirname', 'title'],
-      [generateConfig({ target: 'title', condition: 'exact', value: 'title' }), 'dirname', 'title'],
+      [generateConfig({ target: 'title', condition: 'equals', value: 'title' }), 'dirname', 'title'],
       [generateConfig({ target: 'title', condition: 'regexp', value: '/^title$/i' }), 'dirname', 'title'],
     ];
     cases.forEach(([config, dirname, title]) => {

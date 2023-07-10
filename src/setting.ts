@@ -93,7 +93,7 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
             previewIconText.innerText = 'Preview: ';
           }
         },
-      );
+      ).setDesc('See https://lucide.dev/icons for available icons.');
       defaultTabIcon.controlEl.prepend(previewIconWrapper);
 
       const h2 = containerEl.createEl('h2', { text: 'Icon Conditions' });
@@ -219,7 +219,8 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
           }
         });
       })
-      .setName('icon');
+      .setName('icon')
+      .setDesc('See https://lucide.dev/icons for available icons.');
 
     iconEl.controlEl.prepend(previewIconWrapper);
 

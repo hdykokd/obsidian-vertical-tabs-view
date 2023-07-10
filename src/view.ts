@@ -16,8 +16,7 @@ export class VerticalTabsViewView extends ItemView {
 
   constructor(settings: VerticalTabsViewSettings, leaf: WorkspaceLeaf) {
     super(leaf);
-    this.settings = settings;
-    this.tabIconConfigs = settings.tabIconConfigs.sort((a, b) => b.priority - a.priority);
+    this.setSettings(settings);
 
     this.updateView();
 
@@ -46,6 +45,11 @@ export class VerticalTabsViewView extends ItemView {
 
   getDisplayText() {
     return 'Vertical Tabs';
+  }
+
+  setSettings(settings: VerticalTabsViewSettings) {
+    this.settings = settings;
+    this.tabIconConfigs = settings.tabIconConfigs.sort((a, b) => b.priority - a.priority);
   }
 
   async onClose() {

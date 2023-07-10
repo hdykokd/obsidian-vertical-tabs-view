@@ -30,6 +30,7 @@ export default class VerticalTabsView extends Plugin {
 
   async saveSettings() {
     await this.saveData(this.settings);
+    this.view.setSettings(this.settings);
     this.view.updateView();
   }
 
