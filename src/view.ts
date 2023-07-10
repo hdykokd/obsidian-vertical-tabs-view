@@ -126,10 +126,9 @@ export class VerticalTabsViewView extends ItemView {
 
       // @ts-expect-error
       const file = leaf.view.file;
-      const dirname = file ? file.parent.path : '';
-      const title = leaf.tabHeaderEl.innerText;
 
       // dir
+      const dirname = file ? file.parent.path : '';
       if (dirname) {
         const dirnameEl = document.createElement('span');
         dirnameEl.className = 'vertical-tabs-view-list-item-dirname';
@@ -138,6 +137,7 @@ export class VerticalTabsViewView extends ItemView {
       }
 
       // title
+      const title = leaf.tabHeaderEl.innerText;
       const titleEl = document.createElement('span');
       titleEl.className = 'vertical-tabs-view-list-item-title';
       titleEl.innerText = title;
@@ -146,7 +146,6 @@ export class VerticalTabsViewView extends ItemView {
       listItemLeftContainer.setChildrenInPlace([closeBtn, listItemNameContainer]);
 
       // pin button
-      // @ts-expect-error
       const pinned = leaf.pinned;
       if (this.plugin.settings.showPinnedIcon && pinned) {
         const pinnedBtn = createPinIcon('pin', () => {
