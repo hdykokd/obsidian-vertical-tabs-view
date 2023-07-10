@@ -24,7 +24,7 @@ export const getMatchedTabIconConfig = (
     if (c.matchConfig.condition === 'includes') {
       if (value.includes(c.matchConfig.value)) return true;
     }
-    if (c.matchConfig.condition === 'exact') {
+    if (c.matchConfig.condition === 'equals') {
       if (value === c.matchConfig.value) return true;
     }
     if (c.matchConfig.condition === 'regexp') {
