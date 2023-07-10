@@ -99,7 +99,7 @@ export class VerticalTabsViewView extends ItemView {
     leaves.forEach((leaf: Leaf) => {
       const listItem = document.createElement('li');
       listItem.className = 'vertical-tabs-view-list-item';
-      if (activeLeaf && activeLeaf.id === leaf.id) {
+      if (activeLeaf && (activeLeaf as Leaf).id === leaf.id) {
         listItem.className += ' focused';
       }
       listItem.onclick = () => {
