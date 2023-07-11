@@ -2,8 +2,7 @@
 
 ## Features
 
-- Provides a vertical view of tabs you open and recently accessed
-- (Not Implemented): Provides a vertical view of tabs recently accessed
+- Provides a vertical view of tabs you open
 
 ## Installation
 
