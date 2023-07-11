@@ -29,7 +29,7 @@ export class VerticalTabsViewView extends ItemView {
       this.app.workspace.on('active-leaf-change', (leaf) => {
         if (!leaf) return;
         const state = leaf.getViewState();
-        if (state.type === VIEW_TYPE_VERTICAL_TABS) return;
+        if (state.type === VIEW_TYPE_VERTICAL_TABS && document.querySelector(`#${VIEW_CONTENT_ID}`)) return;
         this.updateView();
       }),
     );
@@ -114,10 +114,15 @@ export class VerticalTabsViewView extends ItemView {
     const leavesInMain: string[] = walk(layout.main.children, []);
     // @ts-expect-error
     const viewTypes = Object.keys(this.app.viewRegistry.viewByType);
+    // detect empty (new) tab
+    viewTypes.push('empty');
+
     const leaves = viewTypes
       .map((t: string) => this.app.workspace.getLeavesOfType(t))
       .flat()
-      .filter((l: WorkspaceLeaf & { id: string }) => leavesInMain.includes(l.id));
+      .filter((l: WorkspaceLeaf & { id: string }) => {
+        return leavesInMain.includes(l.id);
+      });
 
     const createPinIcon = (icon: 'pin' | 'pin-off', onClick: GlobalEventHandlers['onclick']) => {
       const pinBtn = document.createElement('div');
