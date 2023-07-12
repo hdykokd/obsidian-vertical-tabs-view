@@ -236,12 +236,23 @@ export class VerticalTabsViewView extends ItemView {
 
     // title
     // @ts-expect-error
-    const title = leaf.tabHeaderEl.innerText;
+    const viewTitleEls = (leaf.view.titleContainerEl as HTMLElement).querySelectorAll(
+      // @ts-expect-error
+      `.${(leaf.view.titleEl as HTMLElement).className}`,
+    );
+    const viewTitleEl = Array.from(viewTitleEls).find((el) => {
+      // A workaround for the issue where pinning resets the title
+      // modifications made by the "obsidian-front-matter-title" plugin.
+      // https://github.com/snezhig/obsidian-front-matter-title/issues/149
+      if (el.hasAttribute('hidden')) return;
+      return el;
+    });
+
     const titleEl = document.createElement('span');
     titleEl.className = 'vertical-tabs-view-list-item-title';
+    const title = viewTitleEl?.getText() || file.name;
     titleEl.innerText = title;
     listItemNameContainer.appendChild(titleEl);
-
     listItemLeftContainer.setChildrenInPlace(
       [
         closeBtn,
