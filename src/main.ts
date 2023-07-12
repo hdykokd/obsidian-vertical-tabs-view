@@ -30,7 +30,7 @@ export default class VerticalTabsView extends Plugin {
 
   async saveSettings() {
     await this.saveData(this.settings);
-    const view = this.getView();
+    const view = this.view;
     if (!view) return;
     view.setSettings(this.settings);
     view.updateView();
@@ -48,29 +48,25 @@ export default class VerticalTabsView extends Plugin {
       id: 'cycle-previous-tab',
       name: 'Cycle previous tab',
       callback: async () => {
-        const view = this.getView();
-        if (!view) return;
-        view.cyclePreviousTab();
+        if (!this.view) return;
+        this.view.cyclePreviousTab();
       },
     });
     this.addCommand({
       id: 'cycle-next-tab',
       name: 'Cycle next tab',
       callback: async () => {
-        const view = this.getView();
-        if (!view) return;
-        view.cycleNextTab();
+        if (!this.view) return;
+        this.view.cycleNextTab();
       },
     });
   }
 
   registerViewExtension() {
     this.registerView(VIEW_TYPE_VERTICAL_TABS, (leaf) => {
-      return new VerticalTabsViewView(this.settings, leaf);
+      this.view = new VerticalTabsViewView(this.settings, leaf);
+      return this.view;
     });
-  }
-  getView() {
-    return this.app.workspace.getActiveViewOfType(VerticalTabsViewView);
   }
 
   async openViewLeaf() {
