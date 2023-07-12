@@ -4,7 +4,6 @@ import VerticalTabsView from './main';
 import { TabIconConfig } from './types';
 import { createSelect, createText, createToggle } from './util/setting';
 
-// eslint-disable-next-line
 export interface VerticalTabsViewSettings {
   defaultPosition: (typeof DEFAULT_POSITION_OPTIONS)[keyof typeof DEFAULT_POSITION_OPTIONS];
   showPinnedIcon: boolean;
@@ -35,11 +34,10 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
     const { containerEl } = this;
 
     containerEl.empty();
-    containerEl.createEl('h1', { text: 'Vertical Tabs View' });
 
     createSelect(
       containerEl,
-      'Default Position',
+      'Default position',
       'Default position of vertical tabs view opened',
       DEFAULT_POSITION_OPTIONS,
       this.plugin.settings.defaultPosition,
@@ -96,10 +94,8 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
       ).setDesc('See https://lucide.dev/icons for available icons.');
       defaultTabIcon.controlEl.prepend(previewIconWrapper);
 
-      const h2 = containerEl.createEl('h2', { text: 'Icon Conditions' });
-      h2.style.marginLeft = '1em';
-      const p = containerEl.createEl('p', { text: 'Can override default icon' });
-      p.style.marginLeft = '1em';
+      new Setting(containerEl).setName('Icon rules for override icon');
+
       const tabIconConfigs = containerEl.createEl('div');
       tabIconConfigs.style.marginLeft = '1em';
 
@@ -146,8 +142,6 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
     wrapperEl.style.marginBottom = '0.25em';
 
     const matchConfigEl = wrapperEl.createEl('div');
-    matchConfigEl.style.borderTop = '1px solid var(--background-modifier-border)';
-    matchConfigEl.style.borderLeft = '1px solid var(--background-modifier-border)';
     matchConfigEl.style.borderBottom = '1px solid var(--background-modifier-border)';
     matchConfigEl.style.padding = '0.5em 1em';
 
@@ -162,7 +156,7 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
             this.plugin.saveSettings();
           });
       })
-      .setName('match target');
+      .setName('Match target');
 
     // condition
     new Setting(matchConfigEl)
@@ -175,7 +169,7 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
             this.plugin.saveSettings();
           });
       })
-      .setName('match condition');
+      .setName('Match condition');
 
     // value
     new Setting(matchConfigEl)
@@ -185,7 +179,7 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
           this.plugin.saveSettings();
         });
       })
-      .setName('match value')
+      .setName('Match value')
       .setDesc('For regexp, write like: /foo/i');
 
     // priority
@@ -200,7 +194,7 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
           })
           .setDynamicTooltip();
       })
-      .setName('priority')
+      .setName('Priority')
       .setDesc('If there are multiple configs with the same priority, the one defined first will be prioritized.');
 
     // icon
@@ -219,7 +213,7 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
           }
         });
       })
-      .setName('icon')
+      .setName('Icon')
       .setDesc('See https://lucide.dev/icons for available icons.');
 
     iconEl.controlEl.prepend(previewIconWrapper);

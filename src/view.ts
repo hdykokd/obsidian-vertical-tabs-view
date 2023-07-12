@@ -11,7 +11,7 @@ const STORAGE_KEY = {
   LIST_STATE: VIEW_PREFIX + 'list-state',
 } as const;
 
-export const VIEW_TYPE_VERTICAL_TABS = 'view-type-vertical-tabs-view';
+export const VIEW_TYPE_VERTICAL_TABS = 'vertical-tabs-view';
 
 type LayoutNode = {
   id: string;
