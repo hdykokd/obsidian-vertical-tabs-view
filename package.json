@@ -1,7 +1,7 @@
 {
   "name": "obsidian-vertical-tabs-view",
   "version": "1.2.1",
-  "description": "This is pllgin for Obsidian (https://obsidian.md) that provides a vertical view of tabs.",
+  "description": "This is plugin for Obsidian (https://obsidian.md) that provides a vertical tabs view.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",

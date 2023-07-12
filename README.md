@@ -2,14 +2,19 @@
 
 ## Features
 
-- Provides a vertical view of tabs
+- Provides a vertical tabs view
+  - Tabs are sortable, but changes will not sync with the original ones.
 
 ### Commands
 
-- Cycle Previous Tab
-- Cycle Next Tab
+- Cycle previous tab
+- Cycle next tab
 
 ## Installation
+
+### Community
+
+Not published yet.
 
 ### BRAT
 
