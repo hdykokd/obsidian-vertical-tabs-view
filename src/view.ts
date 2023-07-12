@@ -2,9 +2,13 @@ import { ItemView, setIcon, WorkspaceLeaf } from 'obsidian';
 import { VerticalTabsViewSettings } from './setting';
 import { TabIconConfig } from './types';
 import { getMatchedTabIconConfig } from './util/view';
+import Sortable from 'sortablejs';
 
 const VIEW_PREFIX = 'vertical-tabs-view';
 const VIEW_CONTENT_ID = VIEW_PREFIX + '-content';
+const STORAGE_KEY = {
+  LIST_SORT_ORDER: VIEW_PREFIX + 'list-sort-order',
+} as const;
 
 export const VIEW_TYPE_VERTICAL_TABS = 'view-type-vertical-tabs-view';
 
@@ -23,21 +27,17 @@ export class VerticalTabsViewView extends ItemView {
   regexCompileCache: Record<string, RegExp> = {};
 
   state: {
-    tabsCount: number;
     tabs: {
-      [id: string]: {
-        pos: number;
-        leaf: Leaf;
-      };
+      [id: string]: number;
     };
   } = {
-    tabsCount: 0,
     tabs: {},
   };
 
   constructor(settings: VerticalTabsViewSettings, leaf: WorkspaceLeaf) {
     super(leaf);
     this.setSettings(settings);
+    this.state.tabs = JSON.parse(localStorage.getItem(STORAGE_KEY.LIST_SORT_ORDER) || '{}');
 
     this.updateView();
 
@@ -101,30 +101,24 @@ export class VerticalTabsViewView extends ItemView {
     // detect empty(new) tab
     viewTypes.push('empty');
 
-    let leaves = viewTypes
+    const leaves = viewTypes
       .map((t: string) => this.app.workspace.getLeavesOfType(t))
       .flat()
       .filter((l: Leaf) => {
         return leaveIdsInMain.includes(l.id);
-      }) as Leaf[];
-
-    if (this.state.tabsCount > 0) {
-      leaves = leaves.slice().sort((a, b) => {
-        const aPos = this.state.tabs[a.id]?.pos ?? Infinity;
-        const bPos = this.state.tabs[b.id]?.pos ?? Infinity;
+      })
+      .sort((a: Leaf, b: Leaf) => {
+        const aPos = this.state.tabs[a.id] ?? Infinity;
+        const bPos = this.state.tabs[b.id] ?? Infinity;
         return aPos - bPos;
       });
-    }
 
     // initialize
-    this.state.tabsCount = leaves.length;
     this.state.tabs = {};
     leaves.forEach((l: Leaf, index) => {
-      this.state.tabs[l.id] = {
-        pos: index,
-        leaf: l,
-      };
+      this.state.tabs[l.id] = index;
     });
+    localStorage.setItem(STORAGE_KEY.LIST_SORT_ORDER, JSON.stringify(this.state.tabs));
 
     const ul = this.createTabsListEl(leaves);
     el.appendChild(ul);
@@ -134,13 +128,35 @@ export class VerticalTabsViewView extends ItemView {
   createTabsListEl(leaves: WorkspaceLeaf[]) {
     const ul = document.createElement('ul');
     ul.className = 'vertical-tabs-view-list';
+    Sortable.create(ul, {
+      group: 'vertical-tabs-view-list',
+      direction: 'vertical',
+      ghostClass: 'vertical-tabs-view-list-item-ghost',
+      animation: 200,
+      touchStartThreshold: 3,
+      onEnd: (ev: Event & { oldIndex: number; newIndex: number }) => {
+        const start = Math.min(ev.oldIndex, ev.newIndex);
+        const end = Math.max(ev.oldIndex, ev.newIndex);
+
+        for (let i = start; i <= end; i++) {
+          const item = ul.children[i];
+          const leafId = item.getAttribute('data-leaf-id');
+          if (leafId) {
+            this.state.tabs[leafId] = i;
+          }
+        }
+        this.updateView();
+      },
+    });
 
     const activeLeaf = this.app.workspace.getMostRecentLeaf();
 
-    leaves.forEach((leaf: WorkspaceLeaf & { id: string; pinned: boolean }) => {
+    leaves.forEach((leaf: Leaf) => {
       const listItem = document.createElement('li');
+      listItem.dataset.leafId = leaf.id;
+
       listItem.className = 'vertical-tabs-view-list-item';
-      if (activeLeaf && (activeLeaf as WorkspaceLeaf & { id: string }).id === leaf.id) {
+      if (activeLeaf && (activeLeaf as Leaf).id === leaf.id) {
         listItem.className += ' focused';
       }
       listItem.onclick = () => {
