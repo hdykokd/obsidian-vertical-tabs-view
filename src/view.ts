@@ -8,6 +8,7 @@ import { setActiveLeafById } from './util/leaf';
 const VIEW_PREFIX = 'vertical-tabs-view';
 const VIEW_CONTENT_ID = VIEW_PREFIX + '-content';
 const VIEW_LIST_ID = VIEW_PREFIX + '-list';
+const VIEW_LIST_ITEM_CLASS = VIEW_PREFIX + '-list-item';
 const STORAGE_KEY = {
   LIST_STATE: VIEW_PREFIX + 'list-state',
 } as const;
@@ -161,6 +162,22 @@ export class VerticalTabsViewView extends ItemView {
     });
     ul.setChildrenInPlace(listItems);
     localStorage.setItem(STORAGE_KEY.LIST_STATE, JSON.stringify(this.state));
+
+    this.scrollIntoActiveListItem();
+  }
+
+  scrollIntoActiveListItem() {
+    const activeListItem = document.querySelector(`.${VIEW_LIST_ITEM_CLASS}.focused`);
+    if (!activeListItem) return;
+
+    const listItemRect = activeListItem.getBoundingClientRect();
+    if (!listItemRect) return;
+    const parentRect = activeListItem.parentElement?.getBoundingClientRect();
+    if (!parentRect) return;
+
+    if (listItemRect.top > parentRect.top || listItemRect.bottom < parentRect.bottom) {
+      activeListItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
   }
 
   // ---- UI
@@ -196,7 +213,7 @@ export class VerticalTabsViewView extends ItemView {
     const listItem = document.createElement('li');
     listItem.dataset.leafId = leaf.id;
 
-    listItem.className = 'vertical-tabs-view-list-item';
+    listItem.className = VIEW_LIST_ITEM_CLASS;
     if (activeLeaf && activeLeaf.id === leaf.id) {
       listItem.className += ' focused';
     }
