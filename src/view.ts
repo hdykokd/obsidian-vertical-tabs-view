@@ -186,6 +186,8 @@ export class VerticalTabsViewView extends ItemView {
     ul.className = 'vertical-tabs-view-list';
     Sortable.create(ul, {
       group: 'vertical-tabs-view-list',
+      delay: 500,
+      delayOnTouchOnly: true,
       direction: 'vertical',
       ghostClass: 'vertical-tabs-view-list-item-ghost',
       animation: 200,
