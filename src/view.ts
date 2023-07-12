@@ -14,6 +14,8 @@ type LayoutNode = {
   children?: LayoutNode[];
 };
 
+type Leaf = WorkspaceLeaf & { id: string; pinned: boolean };
+
 export class VerticalTabsViewView extends ItemView {
   settings: VerticalTabsViewSettings;
   tabIconConfigs: TabIconConfig[];
@@ -21,9 +23,16 @@ export class VerticalTabsViewView extends ItemView {
   regexCompileCache: Record<string, RegExp> = {};
 
   state: {
-    tabs: WorkspaceLeaf[];
+    tabsCount: number;
+    tabs: {
+      [id: string]: {
+        pos: number;
+        leaf: Leaf;
+      };
+    };
   } = {
-    tabs: [],
+    tabsCount: 0,
+    tabs: {},
   };
 
   constructor(settings: VerticalTabsViewSettings, leaf: WorkspaceLeaf) {
@@ -86,19 +95,36 @@ export class VerticalTabsViewView extends ItemView {
 
     const layout = this.app.workspace.getLayout();
     const leaveIdsInMain: string[] = walk(layout.main.children, []);
+
     // @ts-expect-error
     const viewTypes = Object.keys(this.app.viewRegistry.viewByType);
-    // detect empty (new) tab
+    // detect empty(new) tab
     viewTypes.push('empty');
 
-    const leaves = viewTypes
+    let leaves = viewTypes
       .map((t: string) => this.app.workspace.getLeavesOfType(t))
       .flat()
-      .filter((l: WorkspaceLeaf & { id: string }) => {
+      .filter((l: Leaf) => {
         return leaveIdsInMain.includes(l.id);
-      });
+      }) as Leaf[];
 
-    this.state.tabs = leaves;
+    if (this.state.tabsCount > 0) {
+      leaves = leaves.slice().sort((a, b) => {
+        const aPos = this.state.tabs[a.id]?.pos ?? Infinity;
+        const bPos = this.state.tabs[b.id]?.pos ?? Infinity;
+        return aPos - bPos;
+      });
+    }
+
+    // initialize
+    this.state.tabsCount = leaves.length;
+    this.state.tabs = {};
+    leaves.forEach((l: Leaf, index) => {
+      this.state.tabs[l.id] = {
+        pos: index,
+        leaf: l,
+      };
+    });
 
     const ul = this.createTabsListEl(leaves);
     el.appendChild(ul);
