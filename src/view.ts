@@ -2,21 +2,49 @@ import { ItemView, setIcon, WorkspaceLeaf } from 'obsidian';
 import { VerticalTabsViewSettings } from './setting';
 import { TabIconConfig } from './types';
 import { getMatchedTabIconConfig } from './util/view';
+import Sortable, { type SortableEvent } from 'sortablejs';
+import { setActiveLeafById } from './util/leaf';
 
 const VIEW_PREFIX = 'vertical-tabs-view';
-const VIEW_CONTAINER_ID = VIEW_PREFIX + '-container';
 const VIEW_CONTENT_ID = VIEW_PREFIX + '-content';
+const STORAGE_KEY = {
+  LIST_STATE: VIEW_PREFIX + 'list-state',
+} as const;
 
 export const VIEW_TYPE_VERTICAL_TABS = 'view-type-vertical-tabs-view';
 
+type LayoutNode = {
+  id: string;
+  type: 'leaf' | 'tabs';
+  children?: LayoutNode[];
+};
+
+type Leaf = WorkspaceLeaf & { id: string; pinned: boolean };
+
 export class VerticalTabsViewView extends ItemView {
   settings: VerticalTabsViewSettings;
-  regexCompileCache: Record<string, RegExp> = {};
   tabIconConfigs: TabIconConfig[];
+
+  regexCompileCache: Record<string, RegExp> = {};
+
+  state: {
+    tabIdToIndex: {
+      [id: string]: number;
+    };
+    sortedTabIds: string[];
+  } = {
+    tabIdToIndex: {},
+    sortedTabIds: [],
+  };
 
   constructor(settings: VerticalTabsViewSettings, leaf: WorkspaceLeaf) {
     super(leaf);
     this.setSettings(settings);
+
+    const savedState = localStorage.getItem(STORAGE_KEY.LIST_STATE);
+    if (savedState) {
+      this.state = JSON.parse(savedState);
+    }
 
     this.updateView();
 
@@ -34,61 +62,47 @@ export class VerticalTabsViewView extends ItemView {
       }),
     );
   }
-
-  getViewType() {
-    return VIEW_TYPE_VERTICAL_TABS;
-  }
-
-  getIcon() {
-    return 'list';
-  }
-
-  getDisplayText() {
-    return 'Vertical Tabs';
-  }
-
   setSettings(settings: VerticalTabsViewSettings) {
     this.settings = settings;
     this.tabIconConfigs = settings.tabIconConfigs.sort((a, b) => b.priority - a.priority);
   }
 
+  getViewType() {
+    return VIEW_TYPE_VERTICAL_TABS;
+  }
+  getIcon() {
+    return 'list';
+  }
+  getDisplayText() {
+    return 'Vertical Tabs';
+  }
   async onClose() {
     this.containerEl.empty();
   }
-
   async onOpen() {
     const el = this.contentEl;
     el.id = VIEW_CONTENT_ID;
-
-    const messageContainer = document.createElement('div');
-    messageContainer.id = VIEW_CONTAINER_ID;
-
     this.updateView();
   }
-
-  getMatchedTabIconConfig(configs: TabIconConfig[], dirname: string, title: string) {
-    return getMatchedTabIconConfig(configs, dirname, title, this.regexCompileCache);
+  private getActiveLeafIndex() {
+    const leaf = this.app.workspace.getMostRecentLeaf() as Leaf;
+    if (!leaf) return;
+    return this.state.tabIdToIndex[leaf.id];
   }
-
-  createTabIcon(
-    leaf: WorkspaceLeaf & { tabHeaderInnerIconEl: HTMLElement },
-    dirname: string,
-    title: string,
-  ): HTMLElement {
-    const icon = leaf.tabHeaderInnerIconEl.cloneNode(true) as HTMLElement;
-    icon.className = 'vertical-tabs-view-list-item-tab-icon vertical-tabs-view-list-item-icon';
-    const matchedConfig = this.getMatchedTabIconConfig(this.tabIconConfigs, dirname, title);
-    if (matchedConfig) {
-      // override
-      setIcon(icon, matchedConfig.icon);
-    } else if (this.settings.defaultTabIcon) {
-      // set default
-      setIcon(icon, this.settings.defaultTabIcon);
-    } else if (leaf.getViewState().type === 'markdown') {
-      // remove
-      setIcon(icon, '');
+  cycleNextTab() {
+    const currentTabIndex = this.getActiveLeafIndex();
+    if (currentTabIndex == null) return;
+    const newTabIndex = (currentTabIndex + 1) % this.state.sortedTabIds.length;
+    setActiveLeafById(this.app, this.state.sortedTabIds[newTabIndex]);
+  }
+  cyclePreviousTab() {
+    const currentTabIndex = this.getActiveLeafIndex();
+    if (currentTabIndex == null) return;
+    let newTabIndex = (currentTabIndex - 1) % this.state.sortedTabIds.length;
+    if (newTabIndex < 0) {
+      newTabIndex += this.state.sortedTabIds.length;
     }
-    return icon;
+    setActiveLeafById(this.app, this.state.sortedTabIds[newTabIndex]);
   }
 
   updateView() {
@@ -96,47 +110,85 @@ export class VerticalTabsViewView extends ItemView {
     if (!el) return;
     el.setChildrenInPlace([]);
 
-    const ul = document.createElement('ul');
-    ul.className = 'vertical-tabs-view-list';
-
-    const walk = (nodes: any[], leaves: any[] = []) => {
+    const walk = (nodes: LayoutNode[], leaveIds: string[] = []) => {
       nodes.forEach((node) => {
         if (node.type === 'leaf') {
-          leaves.push(node.id);
-        } else if ('children' in node) {
-          return walk((node as any).children, leaves);
+          leaveIds.push(node.id);
+        } else if ('children' in node && Array.isArray(node.children)) {
+          return walk(node.children, leaveIds);
         }
       });
-      return leaves;
+      return leaveIds;
     };
 
     const layout = this.app.workspace.getLayout();
-    const leavesInMain: string[] = walk(layout.main.children, []);
+    const leaveIdsInMain: string[] = walk(layout.main.children, []);
+
     // @ts-expect-error
     const viewTypes = Object.keys(this.app.viewRegistry.viewByType);
-    // detect empty (new) tab
+    // detect empty(new) tab
     viewTypes.push('empty');
 
     const leaves = viewTypes
       .map((t: string) => this.app.workspace.getLeavesOfType(t))
       .flat()
-      .filter((l: WorkspaceLeaf & { id: string }) => {
-        return leavesInMain.includes(l.id);
+      .filter((l: Leaf) => {
+        return leaveIdsInMain.includes(l.id);
+      })
+      .sort((a: Leaf, b: Leaf) => {
+        const aPos = this.state.tabIdToIndex[a.id] ?? Infinity;
+        const bPos = this.state.tabIdToIndex[b.id] ?? Infinity;
+        return aPos - bPos;
       });
 
-    const createPinIcon = (icon: 'pin' | 'pin-off', onClick: GlobalEventHandlers['onclick']) => {
-      const pinBtn = document.createElement('div');
-      pinBtn.className = `.vertical-tabs-view-list-item-tab-icon vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-${icon}`;
-      setIcon(pinBtn, icon);
-      pinBtn.onclick = onClick;
-      return pinBtn;
-    };
+    // initialize
+    this.state.tabIdToIndex = {};
+    this.state.sortedTabIds = [];
+    leaves.forEach((l: Leaf, index) => {
+      this.state.tabIdToIndex[l.id] = index;
+      this.state.sortedTabIds.push(l.id);
+    });
+    localStorage.setItem(STORAGE_KEY.LIST_STATE, JSON.stringify(this.state));
+
+    const ul = this.createTabsListEl(leaves);
+    el.appendChild(ul);
+  }
+
+  // ---- UI
+  createTabsListEl(leaves: WorkspaceLeaf[]) {
+    const ul = document.createElement('ul');
+    ul.className = 'vertical-tabs-view-list';
+    Sortable.create(ul, {
+      group: 'vertical-tabs-view-list',
+      direction: 'vertical',
+      ghostClass: 'vertical-tabs-view-list-item-ghost',
+      animation: 200,
+      touchStartThreshold: 3,
+      onEnd: (ev: SortableEvent) => {
+        if (ev.oldIndex == null || ev.newIndex == null) return;
+        const start = Math.min(ev.oldIndex, ev.newIndex);
+        const end = Math.max(ev.oldIndex, ev.newIndex);
+
+        for (let i = start; i <= end; i++) {
+          const item = ul.children[i];
+          const leafId = item.getAttribute('data-leaf-id');
+          if (leafId) {
+            this.state.tabIdToIndex[leafId] = i;
+            this.state.sortedTabIds[i] = leafId;
+          }
+        }
+        this.updateView();
+      },
+    });
 
     const activeLeaf = this.app.workspace.getMostRecentLeaf();
-    leaves.forEach((leaf: WorkspaceLeaf & { id: string; pinned: boolean }) => {
+
+    leaves.forEach((leaf: Leaf) => {
       const listItem = document.createElement('li');
+      listItem.dataset.leafId = leaf.id;
+
       listItem.className = 'vertical-tabs-view-list-item';
-      if (activeLeaf && (activeLeaf as WorkspaceLeaf & { id: string }).id === leaf.id) {
+      if (activeLeaf && (activeLeaf as Leaf).id === leaf.id) {
         listItem.className += ' focused';
       }
       listItem.onclick = () => {
@@ -185,7 +237,7 @@ export class VerticalTabsViewView extends ItemView {
         [
           closeBtn,
           // @ts-expect-error
-          this.settings.showTabIcon ? this.createTabIcon(leaf, dirname, title) : null,
+          this.settings.showTabIcon ? this.createTabIconEl(leaf, dirname, title) : null,
           listItemNameContainer,
         ].filter((v) => v) as Node[],
       );
@@ -193,13 +245,13 @@ export class VerticalTabsViewView extends ItemView {
       // pin button
       const pinned = leaf.pinned;
       if (this.settings.showPinnedIcon && pinned) {
-        const pinnedBtn = createPinIcon('pin', () => {
+        const pinnedBtn = this.createPinIconEl('pin', () => {
           leaf.setPinned(false);
         });
         listItemRightContainer.appendChild(pinnedBtn);
       }
       if (this.settings.showPinIconIfNotPinned && !pinned) {
-        const pinnedBtn = createPinIcon('pin-off', () => {
+        const pinnedBtn = this.createPinIconEl('pin-off', () => {
           leaf.setPinned(true);
         });
         listItemRightContainer.appendChild(pinnedBtn);
@@ -209,7 +261,35 @@ export class VerticalTabsViewView extends ItemView {
 
       ul.appendChild(listItem);
     });
+    return ul;
+  }
 
-    el.appendChild(ul);
+  createTabIconEl(
+    leaf: WorkspaceLeaf & { tabHeaderInnerIconEl: HTMLElement },
+    dirname: string,
+    title: string,
+  ): HTMLElement {
+    const icon = leaf.tabHeaderInnerIconEl.cloneNode(true) as HTMLElement;
+    icon.className = 'vertical-tabs-view-list-item-tab-icon vertical-tabs-view-list-item-icon';
+    const matchedConfig = getMatchedTabIconConfig(this.tabIconConfigs, dirname, title, this.regexCompileCache);
+    if (matchedConfig) {
+      // override
+      setIcon(icon, matchedConfig.icon);
+    } else if (this.settings.defaultTabIcon) {
+      // set default
+      setIcon(icon, this.settings.defaultTabIcon);
+    } else if (leaf.getViewState().type === 'markdown') {
+      // remove
+      setIcon(icon, '');
+    }
+    return icon;
+  }
+
+  createPinIconEl(icon: 'pin' | 'pin-off', onClick: GlobalEventHandlers['onclick']) {
+    const pinBtn = document.createElement('div');
+    pinBtn.className = `.vertical-tabs-view-list-item-tab-icon vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-${icon}`;
+    setIcon(pinBtn, icon);
+    pinBtn.onclick = onClick;
+    return pinBtn;
   }
 }

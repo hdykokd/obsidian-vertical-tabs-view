@@ -5,9 +5,9 @@
 
 ul.vertical-tabs-view-list {
   list-style: none;
+  height: 100%;
   padding: 0;
   margin: 0;
-  margin-bottom: 4em;
 }
 
 .vertical-tabs-view-list li.vertical-tabs-view-list-item {
@@ -23,6 +23,10 @@ ul.vertical-tabs-view-list {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.vertical-tabs-view-list-item-ghost {
+  opacity: 0.4;
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-left-container,
