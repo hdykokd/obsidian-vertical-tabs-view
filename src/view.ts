@@ -287,7 +287,7 @@ export class VerticalTabsViewView extends ItemView {
 
   createPinIconEl(icon: 'pin' | 'pin-off', onClick: GlobalEventHandlers['onclick']) {
     const pinBtn = document.createElement('div');
-    pinBtn.className = `.vertical-tabs-view-list-item-tab-icon vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-${icon}`;
+    pinBtn.className = `vertical-tabs-view-list-item-icon vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-${icon}`;
     setIcon(pinBtn, icon);
     pinBtn.onclick = onClick;
     return pinBtn;
