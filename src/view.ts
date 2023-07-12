@@ -2,12 +2,13 @@ import { ItemView, setIcon, WorkspaceLeaf } from 'obsidian';
 import { VerticalTabsViewSettings } from './setting';
 import { TabIconConfig } from './types';
 import { getMatchedTabIconConfig } from './util/view';
-import Sortable from 'sortablejs';
+import Sortable, { type SortableEvent } from 'sortablejs';
+import { setActiveLeafById } from './util/leaf';
 
 const VIEW_PREFIX = 'vertical-tabs-view';
 const VIEW_CONTENT_ID = VIEW_PREFIX + '-content';
 const STORAGE_KEY = {
-  LIST_SORT_ORDER: VIEW_PREFIX + 'list-sort-order',
+  LIST_STATE: VIEW_PREFIX + 'list-state',
 } as const;
 
 export const VIEW_TYPE_VERTICAL_TABS = 'view-type-vertical-tabs-view';
@@ -27,17 +28,23 @@ export class VerticalTabsViewView extends ItemView {
   regexCompileCache: Record<string, RegExp> = {};
 
   state: {
-    tabs: {
+    tabIdToIndex: {
       [id: string]: number;
     };
+    sortedTabIds: string[];
   } = {
-    tabs: {},
+    tabIdToIndex: {},
+    sortedTabIds: [],
   };
 
   constructor(settings: VerticalTabsViewSettings, leaf: WorkspaceLeaf) {
     super(leaf);
     this.setSettings(settings);
-    this.state.tabs = JSON.parse(localStorage.getItem(STORAGE_KEY.LIST_SORT_ORDER) || '{}');
+
+    const savedState = localStorage.getItem(STORAGE_KEY.LIST_STATE);
+    if (savedState) {
+      this.state = JSON.parse(savedState);
+    }
 
     this.updateView();
 
@@ -77,6 +84,27 @@ export class VerticalTabsViewView extends ItemView {
     el.id = VIEW_CONTENT_ID;
     this.updateView();
   }
+  private getActiveLeafIndex() {
+    const leaf = this.app.workspace.getMostRecentLeaf() as Leaf;
+    if (!leaf) return;
+    return this.state.tabIdToIndex[leaf.id];
+  }
+  cycleNextTab() {
+    const currentTabIndex = this.getActiveLeafIndex();
+    if (currentTabIndex == null) return;
+    const newTabIndex = (currentTabIndex + 1) % this.state.sortedTabIds.length;
+    setActiveLeafById(this.app, this.state.sortedTabIds[newTabIndex]);
+  }
+  cyclePreviousTab() {
+    const currentTabIndex = this.getActiveLeafIndex();
+    if (currentTabIndex == null) return;
+    let newTabIndex = (currentTabIndex - 1) % this.state.sortedTabIds.length;
+    if (newTabIndex < 0) {
+      newTabIndex += this.state.sortedTabIds.length;
+    }
+    setActiveLeafById(this.app, this.state.sortedTabIds[newTabIndex]);
+  }
+
   updateView() {
     const el = document.querySelector(`#${VIEW_CONTENT_ID}`);
     if (!el) return;
@@ -108,17 +136,19 @@ export class VerticalTabsViewView extends ItemView {
         return leaveIdsInMain.includes(l.id);
       })
       .sort((a: Leaf, b: Leaf) => {
-        const aPos = this.state.tabs[a.id] ?? Infinity;
-        const bPos = this.state.tabs[b.id] ?? Infinity;
+        const aPos = this.state.tabIdToIndex[a.id] ?? Infinity;
+        const bPos = this.state.tabIdToIndex[b.id] ?? Infinity;
         return aPos - bPos;
       });
 
     // initialize
-    this.state.tabs = {};
+    this.state.tabIdToIndex = {};
+    this.state.sortedTabIds = [];
     leaves.forEach((l: Leaf, index) => {
-      this.state.tabs[l.id] = index;
+      this.state.tabIdToIndex[l.id] = index;
+      this.state.sortedTabIds.push(l.id);
     });
-    localStorage.setItem(STORAGE_KEY.LIST_SORT_ORDER, JSON.stringify(this.state.tabs));
+    localStorage.setItem(STORAGE_KEY.LIST_STATE, JSON.stringify(this.state));
 
     const ul = this.createTabsListEl(leaves);
     el.appendChild(ul);
@@ -134,7 +164,8 @@ export class VerticalTabsViewView extends ItemView {
       ghostClass: 'vertical-tabs-view-list-item-ghost',
       animation: 200,
       touchStartThreshold: 3,
-      onEnd: (ev: Event & { oldIndex: number; newIndex: number }) => {
+      onEnd: (ev: SortableEvent) => {
+        if (ev.oldIndex == null || ev.newIndex == null) return;
         const start = Math.min(ev.oldIndex, ev.newIndex);
         const end = Math.max(ev.oldIndex, ev.newIndex);
 
@@ -142,7 +173,8 @@ export class VerticalTabsViewView extends ItemView {
           const item = ul.children[i];
           const leafId = item.getAttribute('data-leaf-id');
           if (leafId) {
-            this.state.tabs[leafId] = i;
+            this.state.tabIdToIndex[leafId] = i;
+            this.state.sortedTabIds[i] = leafId;
           }
         }
         this.updateView();

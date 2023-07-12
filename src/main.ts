@@ -42,6 +42,20 @@ export default class VerticalTabsView extends Plugin {
         this.openViewLeaf();
       },
     });
+    this.addCommand({
+      id: 'vertical-tabs-view-cycle-previous-tab',
+      name: 'Cycle Previous Tab',
+      callback: async () => {
+        this.view.cyclePreviousTab();
+      },
+    });
+    this.addCommand({
+      id: 'vertical-tabs-view-cycle-next-tab',
+      name: 'Cycle Next Tab',
+      callback: async () => {
+        this.view.cycleNextTab();
+      },
+    });
   }
 
   registerViewExtension() {
