@@ -2,7 +2,12 @@
 
 ## Features
 
-- Provides a vertical view of tabs you open
+- Provides a vertical view of tabs
+
+### Commands
+
+- Cycle Previous Tab
+- Cycle Next Tab
 
 ## Installation
 
