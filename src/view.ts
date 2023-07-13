@@ -25,7 +25,7 @@ type Leaf = WorkspaceLeaf & { id: string; pinned: boolean };
 
 export class VerticalTabsViewView extends ItemView {
   settings: VerticalTabsViewSettings;
-  tabIconConfigs: TabIconConfig[];
+  tabIconRules: TabIconConfig[];
 
   regexCompileCache: Record<string, RegExp> = {};
 
@@ -66,7 +66,7 @@ export class VerticalTabsViewView extends ItemView {
   }
   setSettings(settings: VerticalTabsViewSettings) {
     this.settings = settings;
-    this.tabIconConfigs = settings.tabIconConfigs.sort((a, b) => b.priority - a.priority);
+    this.tabIconRules = settings.tabIconRules.sort((a, b) => b.priority - a.priority);
   }
 
   getViewType() {
@@ -323,7 +323,7 @@ export class VerticalTabsViewView extends ItemView {
   ): HTMLElement {
     const icon = leaf.tabHeaderInnerIconEl.cloneNode(true) as HTMLElement;
     icon.className = 'vertical-tabs-view-list-item-tab-icon vertical-tabs-view-list-item-icon';
-    const matchedConfig = getMatchedTabIconConfig(this.tabIconConfigs, dirname, title, this.regexCompileCache);
+    const matchedConfig = getMatchedTabIconConfig(this.tabIconRules, dirname, title, this.regexCompileCache);
     if (matchedConfig) {
       // override
       setIcon(icon, matchedConfig.icon);

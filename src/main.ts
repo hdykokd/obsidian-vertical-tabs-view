@@ -24,6 +24,20 @@ export default class VerticalTabsView extends Plugin {
 
   async loadSettings() {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    console.log('DEBUGPRINT[1]: main.ts:26: this.settings=', this.settings);
+
+    // migrate
+    if (
+      this.settings.tabIconRules.length === 0 &&
+      'tabIconConfigs' in this.settings &&
+      this.settings.tabIconConfigs.length > 0
+    ) {
+      this.settings.tabIconRules = this.settings.tabIconConfigs;
+      // @ts-expect-error TS2790
+      delete this.settings.tabIconConfigs;
+      console.log('DEBUGPRINT[1]: main.ts:26: this.settings=', this.settings);
+      this.saveSettings();
+    }
   }
 
   async saveSettings() {
@@ -69,7 +83,7 @@ export default class VerticalTabsView extends Plugin {
   }
 
   getView() {
-    const leaf = app.workspace
+    const leaf = this.app.workspace
       .getLeavesOfType(VIEW_TYPE_VERTICAL_TABS)
       .find((leaf) => leaf.view instanceof VerticalTabsViewView);
     return leaf?.view as VerticalTabsViewView;

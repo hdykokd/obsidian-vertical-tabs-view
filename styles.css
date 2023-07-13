@@ -105,3 +105,31 @@ ul.vertical-tabs-view-list {
   color: var(--tab-text-color);
   font-size: var(--font-ui-smaller);
 }
+
+/* settings */
+.vertical-tabs-view-settings-preview-icon-wrapper {
+  display: flex;
+}
+.vertical-tabs-view-settings-preview-icon-text {
+  margin-right: 0.5em;
+}
+.vertical-tabs-view-settings-tab-icon-rules {
+  margin-left: 1em;
+}
+.vertical-tabs-view-settings-tab-icon-rules-add-btn.setting-item {
+  border: none;
+}
+.vertical-tabs-view-settings-tab-icon-rule-wrapper {
+  border: 1px solid var(--background-modifier-border);
+  padding: 1em;
+  margin-bottom: 0.25em;
+}
+.vertical-tabs-view-settings-tab-icon-rule-match-config-wrapper {
+  border-bottom: 1px solid var(--background-modifier-border);
+  padding: 0.5em 1em;
+}
+.vertical-tabs-view-settings-tab-icon-rule-remove-btn-wrapper {
+  display: flex;
+  justify-content: end;
+  margin-top: 1em;
+}

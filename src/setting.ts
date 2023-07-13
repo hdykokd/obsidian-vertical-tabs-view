@@ -10,7 +10,9 @@ export interface VerticalTabsViewSettings {
   showPinIconIfNotPinned: boolean;
   showTabIcon: boolean;
   defaultTabIcon: string;
-  tabIconConfigs: TabIconConfig[];
+  tabIconRules: TabIconConfig[];
+  // deprecated
+  tabIconConfigs?: TabIconConfig[];
 }
 
 export const DEFAULT_SETTINGS: VerticalTabsViewSettings = {
@@ -19,7 +21,7 @@ export const DEFAULT_SETTINGS: VerticalTabsViewSettings = {
   showPinIconIfNotPinned: true,
   showTabIcon: true,
   defaultTabIcon: 'file',
-  tabIconConfigs: [],
+  tabIconRules: [],
 };
 
 export class VerticalTabsViewSettingTab extends PluginSettingTab {
@@ -96,33 +98,33 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
 
       new Setting(containerEl).setName('Icon rules for override icon');
 
-      const tabIconConfigs = containerEl.createEl('div');
-      tabIconConfigs.style.marginLeft = '1em';
+      const tabIconRules = containerEl.createEl('div');
+      tabIconRules.className = 'vertical-tabs-view-settings-tab-icon-rules';
 
-      if (this.plugin.settings.tabIconConfigs.length === 0) {
-        this.plugin.settings.tabIconConfigs.push(structuredClone(DEFAULT_TAB_ICON_CONFIG));
+      if (this.plugin.settings.tabIconRules.length === 0) {
+        this.plugin.settings.tabIconRules.push(structuredClone(DEFAULT_TAB_ICON_CONFIG));
       }
 
-      this.plugin.settings.tabIconConfigs.forEach((c, i) => {
-        this.addTabIconConfig(tabIconConfigs, c, i);
+      this.plugin.settings.tabIconRules.forEach((c, i) => {
+        this.addTabIconRule(tabIconRules, c, i);
       });
 
-      const addBtn = new Setting(tabIconConfigs).addButton((button) => {
+      const addBtn = new Setting(tabIconRules).addButton((button) => {
         button.setButtonText('Add').onClick(async () => {
-          this.plugin.settings.tabIconConfigs.push(structuredClone(DEFAULT_TAB_ICON_CONFIG));
+          this.plugin.settings.tabIconRules.push(structuredClone(DEFAULT_TAB_ICON_CONFIG));
           this.display();
         });
       });
-      addBtn.settingEl.style.border = 'none';
+      addBtn.setClass('vtab-icon-rules-ertical-tabs-view-settings-tab-icon-rules-add-btn');
     }
   }
 
   createPreviewIcon(defaultIcon: string) {
     const previewIconWrapper = document.createElement('div');
-    previewIconWrapper.style.display = 'flex';
+    previewIconWrapper.className = 'vertical-tabs-view-settings-tab-preview-icon-wrapper';
     const previewIconText = document.createElement('div');
+    previewIconText.className = 'vertical-tabs-view-settings-tab-preview-icon-text';
     previewIconText.innerText = 'Preview: ';
-    previewIconText.style.marginRight = '0.5em';
     const previewIcon = document.createElement('div');
     setIcon(previewIcon, defaultIcon);
     if (previewIcon.children.length === 0) {
@@ -135,15 +137,12 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
     return { previewIconWrapper, previewIcon, previewIconText };
   }
 
-  addTabIconConfig(parentEl: HTMLElement, config: TabIconConfig, index: number) {
+  addTabIconRule(parentEl: HTMLElement, config: TabIconConfig, index: number) {
     const wrapperEl = parentEl.createEl('div');
-    wrapperEl.style.border = '1px solid var(--background-modifier-border)';
-    wrapperEl.style.padding = '1em';
-    wrapperEl.style.marginBottom = '0.25em';
+    wrapperEl.className = 'vertical-tabs-view-settings-tab-icon-rule-wrapper';
 
     const matchConfigEl = wrapperEl.createEl('div');
-    matchConfigEl.style.borderBottom = '1px solid var(--background-modifier-border)';
-    matchConfigEl.style.padding = '0.5em 1em';
+    matchConfigEl.className = 'vertical-tabs-view-settings-tab-icon-rule-match-config-wrapper';
 
     // target
     new Setting(matchConfigEl)
@@ -220,13 +219,11 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
 
     // remove icon
     const removeBtnWrapper = wrapperEl.createEl('div');
-    removeBtnWrapper.style.display = 'flex';
-    removeBtnWrapper.style.justifyContent = 'end';
-    removeBtnWrapper.style.marginTop = '1em';
+    removeBtnWrapper.className = 'vertical-tabs-view-settings-tab-icon-rule-remove-btn-wrapper';
     const removeBtn = removeBtnWrapper.createEl('button');
     removeBtn.setText('Remove');
     removeBtn.onclick = () => {
-      this.plugin.settings.tabIconConfigs.splice(index, 1);
+      this.plugin.settings.tabIconRules.splice(index, 1);
       this.plugin.saveSettings();
       this.display();
     };
