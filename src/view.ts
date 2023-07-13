@@ -188,10 +188,24 @@ export class VerticalTabsViewView extends ItemView {
       group: 'vertical-tabs-view-list',
       delay: 500,
       delayOnTouchOnly: true,
+      touchStartThreshold: 3,
       direction: 'vertical',
       ghostClass: 'vertical-tabs-view-list-item-ghost',
       animation: 200,
-      touchStartThreshold: 3,
+      onChange: (ev) => {
+        const scrollContainer = document.querySelector(`#${VIEW_CONTENT_ID}`);
+        if (!scrollContainer) return;
+
+        const scrollContainerRect = scrollContainer.getBoundingClientRect();
+        const itemRect = ev.item.getBoundingClientRect();
+        const threshold = itemRect.height * 2;
+
+        if (itemRect.top < threshold) {
+          scrollContainer.scrollBy({ top: -threshold, behavior: 'smooth' });
+        } else if (scrollContainerRect.height - itemRect.top < threshold) {
+          scrollContainer.scrollBy({ top: threshold, behavior: 'smooth' });
+        }
+      },
       onEnd: (ev: SortableEvent) => {
         if (ev.oldIndex == null || ev.newIndex == null) return;
         const start = Math.min(ev.oldIndex, ev.newIndex);
