@@ -24,7 +24,6 @@ export default class VerticalTabsView extends Plugin {
 
   async loadSettings() {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-    console.log('DEBUGPRINT[1]: main.ts:26: this.settings=', this.settings);
 
     // migrate
     if (
@@ -35,7 +34,6 @@ export default class VerticalTabsView extends Plugin {
     ) {
       this.settings.tabIconRules = this.settings.tabIconConfigs;
       delete this.settings.tabIconConfigs;
-      console.log('DEBUGPRINT[1]: main.ts:26: this.settings=', this.settings);
       this.saveSettings();
     }
   }
