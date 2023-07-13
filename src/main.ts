@@ -30,10 +30,10 @@ export default class VerticalTabsView extends Plugin {
     if (
       this.settings.tabIconRules.length === 0 &&
       'tabIconConfigs' in this.settings &&
+      Array.isArray(this.settings.tabIconConfigs) &&
       this.settings.tabIconConfigs.length > 0
     ) {
       this.settings.tabIconRules = this.settings.tabIconConfigs;
-      // @ts-expect-error TS2790
       delete this.settings.tabIconConfigs;
       console.log('DEBUGPRINT[1]: main.ts:26: this.settings=', this.settings);
       this.saveSettings();
