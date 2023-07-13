@@ -115,7 +115,7 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
           this.display();
         });
       });
-      addBtn.setClass('vtab-icon-rules-ertical-tabs-view-settings-tab-icon-rules-add-btn');
+      addBtn.setClass('vertical-tabs-view-settings-tab-icon-rules-add-btn');
     }
   }
 

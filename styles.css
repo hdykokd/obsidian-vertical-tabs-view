@@ -116,7 +116,7 @@ ul.vertical-tabs-view-list {
 .vertical-tabs-view-settings-tab-icon-rules {
   margin-left: 1em;
 }
-.vertical-tabs-view-settings-tab-icon-rules-add-btn.setting-item {
+.setting-item.vertical-tabs-view-settings-tab-icon-rules-add-btn {
   border: none;
 }
 .vertical-tabs-view-settings-tab-icon-rule-wrapper {
