@@ -46,11 +46,6 @@ ul.vertical-tabs-view-list {
   flex-shrink: 0;
 }
 
-.vertical-tabs-view-list li:hover {
-  color: var(--tab-text-color-focused);
-  background-color: var(--tab-background-active);
-}
-
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-icon {
   color: var(--tab-text-color);
   padding-top: 0.25em;

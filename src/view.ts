@@ -219,8 +219,10 @@ export class VerticalTabsViewView extends ItemView {
     if (activeLeaf && activeLeaf.id === leaf.id) {
       listItem.className += ' focused';
     }
-    listItem.onclick = () => {
+    listItem.onmousedown = () => {
+      document.querySelector(`.${VIEW_LIST_ITEM_CLASS}.focused`)?.removeClass('focused');
       this.app.workspace.setActiveLeaf(leaf);
+      listItem.className += ' focused';
     };
 
     const listItemLeftContainer = document.createElement('div');
