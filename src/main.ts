@@ -81,10 +81,9 @@ export default class VerticalTabsView extends Plugin {
   }
 
   getView() {
-    const leaf = this.app.workspace
-      .getLeavesOfType(VIEW_TYPE_VERTICAL_TABS)
-      .find((leaf) => leaf.view instanceof VerticalTabsViewView);
-    return leaf?.view as VerticalTabsViewView;
+    const leaf = this.app.workspace.getLeavesOfType(VIEW_TYPE_VERTICAL_TABS)[0];
+    if (!leaf) return;
+    return leaf.view as VerticalTabsViewView;
   }
 
   async openViewLeaf() {
@@ -98,9 +97,10 @@ export default class VerticalTabsView extends Plugin {
       return this.app.workspace.getLeftLeaf(false);
     };
 
-    const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_VERTICAL_TABS);
-    if (leaves[0]) {
-      return this.app.workspace.revealLeaf(leaves[0]);
+    const activeLeaf = this.getView();
+    if (activeLeaf) {
+      activeLeaf.updateView();
+      return this.app.workspace.revealLeaf(activeLeaf.leaf);
     }
     const leaf = getLeaf();
     await leaf.setViewState({

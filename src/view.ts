@@ -48,18 +48,11 @@ export class VerticalTabsViewView extends ItemView {
       this.state = JSON.parse(savedState);
     }
 
-    this.updateView();
-
-    this.registerEvent(
-      this.app.workspace.on('layout-change', () => {
-        this.updateView();
-      }),
-    );
     this.registerEvent(
       this.app.workspace.on('active-leaf-change', (leaf) => {
         if (!leaf) return;
         const state = leaf.getViewState();
-        if (state.type === VIEW_TYPE_VERTICAL_TABS && document.querySelector(`#${VIEW_CONTENT_ID}`)) return;
+        if (state.type === VIEW_TYPE_VERTICAL_TABS) return;
         this.updateView();
       }),
     );
@@ -252,6 +245,7 @@ export class VerticalTabsViewView extends ItemView {
     setIcon(closeBtn, 'x');
     closeBtn.onclick = () => {
       leaf.detach();
+      this.updateView();
     };
 
     const listItemNameContainer = document.createElement('div');
@@ -302,12 +296,14 @@ export class VerticalTabsViewView extends ItemView {
     if (this.settings.showPinnedIcon && pinned) {
       const pinnedBtn = this.createPinIconEl('pin', () => {
         leaf.setPinned(false);
+        this.updateView();
       });
       listItemRightContainer.appendChild(pinnedBtn);
     }
     if (this.settings.showPinIconIfNotPinned && !pinned) {
       const pinnedBtn = this.createPinIconEl('pin-off', () => {
         leaf.setPinned(true);
+        this.updateView();
       });
       listItemRightContainer.appendChild(pinnedBtn);
     }
