@@ -72,15 +72,11 @@ export class VerticalTabsViewView extends ItemView {
     return 'Vertical Tabs';
   }
   async onClose() {
-    this.containerEl.empty();
+    this.contentEl.empty();
   }
   async onOpen() {
     const el = this.contentEl;
     el.id = VIEW_CONTENT_ID;
-    const ul = this.createListEl();
-    ul.id = VIEW_LIST_ID;
-    el.appendChild(ul);
-
     this.updateView();
   }
   private getActiveLeafIndex() {
@@ -116,9 +112,9 @@ export class VerticalTabsViewView extends ItemView {
   }
 
   updateView() {
-    const el = document.querySelector(`#${VIEW_CONTENT_ID}`);
-    const ul = document.querySelector(`#${VIEW_LIST_ID}`);
-    if (!el || !ul) return;
+    this.createListEl();
+    const ul = this.contentEl.querySelector(`#${VIEW_LIST_ID}`);
+    if (!ul) return;
 
     const layout = this.app.workspace.getLayout();
     const leaveIdsInMain = this.collectLeafIds(layout.main.children);
@@ -175,7 +171,11 @@ export class VerticalTabsViewView extends ItemView {
 
   // ---- UI
   private createListEl() {
+    const el = this.contentEl;
+    if (el.querySelector(`#${VIEW_LIST_ID}`)) return;
+
     const ul = document.createElement('ul');
+    ul.id = VIEW_LIST_ID;
     ul.className = 'vertical-tabs-view-list';
     Sortable.create(ul, {
       group: 'vertical-tabs-view-list',
@@ -215,7 +215,7 @@ export class VerticalTabsViewView extends ItemView {
         this.updateView();
       },
     });
-    return ul;
+    el.setChildrenInPlace([ul]);
   }
 
   private createListItemEl(leaf: Leaf, activeLeaf?: Leaf) {
