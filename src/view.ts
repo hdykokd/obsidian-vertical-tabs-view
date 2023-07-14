@@ -226,7 +226,11 @@ export class VerticalTabsViewView extends ItemView {
     if (activeLeaf && activeLeaf.id === leaf.id) {
       listItem.className += ' focused';
     }
-    listItem.onmousedown = () => {
+    listItem.onmousedown = (ev) => {
+      if (ev.target instanceof SVGElement) {
+        // icon
+        return;
+      }
       document.querySelector(`.${VIEW_LIST_ITEM_CLASS}.focused`)?.removeClass('focused');
       this.app.workspace.setActiveLeaf(leaf);
       listItem.className += ' focused';
