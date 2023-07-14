@@ -1,7 +1,7 @@
 {
 	"id": "vertical-tabs-view",
 	"name": "Vertical Tabs View",
-	"version": "2.0.8",
+	"version": "2.0.9",
 	"minAppVersion": "0.15.0",
 	"description": "Provides a vertical tabs view.",
 	"author": "hdykokd",
