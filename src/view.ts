@@ -184,7 +184,7 @@ export class VerticalTabsViewView extends ItemView {
       touchStartThreshold: 3,
       direction: 'vertical',
       ghostClass: 'vertical-tabs-view-list-item-ghost',
-      animation: 200,
+      animation: 150,
       onChange: (ev) => {
         const scrollContainer = document.querySelector(`#${VIEW_CONTENT_ID}`);
         if (!scrollContainer) return;
