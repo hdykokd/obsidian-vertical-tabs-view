@@ -1,7 +1,7 @@
-import { TabIconConfig } from 'src/types';
+import { TabIconRule } from 'src/types';
 
 export const getMatchedTabIconConfig = (
-  configs: TabIconConfig[],
+  configs: TabIconRule[],
   dirname: string,
   title: string,
   regexpCompileCache: Record<string, RegExp>,
@@ -14,7 +14,7 @@ export const getMatchedTabIconConfig = (
     return regexp;
   };
 
-  const matchValue = (c: TabIconConfig, value: string) => {
+  const matchValue = (c: TabIconRule, value: string) => {
     if (c.matchConfig.condition === 'startsWith') {
       if (value.startsWith(c.matchConfig.value)) return true;
     }

@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_TAB_ICON_CONFIG } from './constants';
-import { TabIconConfig } from './types';
+import { TabIconRule } from './types';
 import { getMatchedTabIconConfig } from './util/view';
 
-const generateConfig = (matchConfig: TabIconConfig['matchConfig']) => {
+const generateConfig = (matchConfig: TabIconRule['matchConfig']) => {
   return {
     ...DEFAULT_TAB_ICON_CONFIG,
     matchConfig,
@@ -12,7 +12,7 @@ const generateConfig = (matchConfig: TabIconConfig['matchConfig']) => {
 
 describe('VerticalTabsViewView', () => {
   describe('getMatchedTabIconConfig', () => {
-    const cases: [TabIconConfig, string, string][] = [
+    const cases: [TabIconRule, string, string][] = [
       [generateConfig({ target: 'directory', condition: 'startsWith', value: 'dir' }), 'dirname', 'title'],
       [generateConfig({ target: 'directory', condition: 'endsWith', value: 'name' }), 'dirname', 'title'],
       [generateConfig({ target: 'directory', condition: 'includes', value: 'ir' }), 'dirname', 'title'],

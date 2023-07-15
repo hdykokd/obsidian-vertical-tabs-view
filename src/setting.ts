@@ -1,7 +1,7 @@
 import { PluginSettingTab, App, Setting, setIcon } from 'obsidian';
 import { DEFAULT_POSITION_OPTIONS, DEFAULT_TAB_ICON_CONFIG, TAB_ICON_OPTIONS } from './constants';
 import VerticalTabsView from './main';
-import { TabIconConfig } from './types';
+import { TabIconRule } from './types';
 import { createSelect, createText, createToggle } from './util/setting';
 
 export interface VerticalTabsViewSettings {
@@ -10,9 +10,9 @@ export interface VerticalTabsViewSettings {
   showPinIconIfNotPinned: boolean;
   showTabIcon: boolean;
   defaultTabIcon: string;
-  tabIconRules: TabIconConfig[];
+  tabIconRules: TabIconRule[];
   // deprecated
-  tabIconConfigs?: TabIconConfig[];
+  tabIconConfigs?: TabIconRule[];
 }
 
 export const DEFAULT_SETTINGS: VerticalTabsViewSettings = {
@@ -137,7 +137,7 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
     return { previewIconWrapper, previewIcon, previewIconText };
   }
 
-  addTabIconRule(parentEl: HTMLElement, config: TabIconConfig, index: number) {
+  addTabIconRule(parentEl: HTMLElement, config: TabIconRule, index: number) {
     const wrapperEl = parentEl.createEl('div');
     wrapperEl.className = 'vertical-tabs-view-settings-tab-icon-rule-wrapper';
 

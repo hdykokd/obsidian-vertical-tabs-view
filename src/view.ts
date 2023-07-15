@@ -1,6 +1,6 @@
 import { ItemView, setIcon, WorkspaceLeaf } from 'obsidian';
 import { VerticalTabsViewSettings } from './setting';
-import { TabIconConfig } from './types';
+import { TabIconRule } from './types';
 import { getMatchedTabIconConfig } from './util/view';
 import Sortable, { type SortableEvent } from 'sortablejs';
 import { setActiveLeafById } from './util/leaf';
@@ -25,7 +25,7 @@ type Leaf = WorkspaceLeaf & { id: string; pinned: boolean };
 
 export class VerticalTabsViewView extends ItemView {
   settings: VerticalTabsViewSettings;
-  tabIconRules: TabIconConfig[];
+  tabIconRules: TabIconRule[];
 
   regexCompileCache: Record<string, RegExp> = {};
 
@@ -59,7 +59,8 @@ export class VerticalTabsViewView extends ItemView {
   }
   setSettings(settings: VerticalTabsViewSettings) {
     this.settings = settings;
-    this.tabIconRules = settings.tabIconRules.sort((a, b) => b.priority - a.priority);
+    const tabIconRules = structuredClone(settings.tabIconRules) as TabIconRule[];
+    this.tabIconRules = tabIconRules.sort((a, b) => b.priority - a.priority);
   }
 
   getViewType() {
