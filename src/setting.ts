@@ -26,10 +26,16 @@ export const DEFAULT_SETTINGS: VerticalTabsViewSettings = {
 
 export class VerticalTabsViewSettingTab extends PluginSettingTab {
   plugin: VerticalTabsView;
+  settings: VerticalTabsViewSettings;
 
   constructor(app: App, plugin: VerticalTabsView) {
     super(app, plugin);
     this.plugin = plugin;
+    this.settings = structuredClone(plugin.settings);
+  }
+
+  save() {
+    this.plugin.saveSettings(this.settings);
   }
 
   display(): void {
@@ -42,49 +48,41 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
       'Default position',
       'Default position of vertical tabs view opened',
       DEFAULT_POSITION_OPTIONS,
-      this.plugin.settings.defaultPosition,
+      this.settings.defaultPosition,
       (value: (typeof DEFAULT_POSITION_OPTIONS)[keyof typeof DEFAULT_POSITION_OPTIONS]) => {
-        this.plugin.settings.defaultPosition = value;
-        this.plugin.saveSettings();
+        this.settings.defaultPosition = value;
+        this.save();
       },
     );
-    createToggle(containerEl, 'Show pinned icon', '', this.plugin.settings.showPinnedIcon, (value) => {
-      this.plugin.settings.showPinnedIcon = value;
-      this.plugin.saveSettings();
+    createToggle(containerEl, 'Show pinned icon', '', this.settings.showPinnedIcon, (value) => {
+      this.settings.showPinnedIcon = value;
+      this.save();
     });
-    createToggle(
-      containerEl,
-      'Show pin icon if not pinned',
-      '',
-      this.plugin.settings.showPinIconIfNotPinned,
-      (value) => {
-        this.plugin.settings.showPinIconIfNotPinned = value;
-        this.plugin.saveSettings();
-      },
-    );
+    createToggle(containerEl, 'Show pin icon if not pinned', '', this.settings.showPinIconIfNotPinned, (value) => {
+      this.settings.showPinIconIfNotPinned = value;
+      this.save();
+    });
 
     // tab icon
-    createToggle(containerEl, 'Show tab icon', '', this.plugin.settings.showTabIcon, (value) => {
-      this.plugin.settings.showTabIcon = value;
-      this.plugin.saveSettings();
+    createToggle(containerEl, 'Show tab icon', '', this.settings.showTabIcon, (value) => {
+      this.settings.showTabIcon = value;
+      this.save();
       this.display();
     });
 
     // tab icon per condition
-    if (this.plugin.settings.showTabIcon) {
+    if (this.settings.showTabIcon) {
       // default icon
-      const { previewIconWrapper, previewIcon, previewIconText } = this.createPreviewIcon(
-        this.plugin.settings.defaultTabIcon,
-      );
+      const { previewIconWrapper, previewIcon, previewIconText } = this.createPreviewIcon(this.settings.defaultTabIcon);
 
       const defaultTabIcon = createText(
         containerEl,
         'Default tab icon',
         'If you clear this field, icon will be hidden by default.',
-        this.plugin.settings.defaultTabIcon,
+        this.settings.defaultTabIcon,
         (value) => {
-          this.plugin.settings.defaultTabIcon = value;
-          this.plugin.saveSettings();
+          this.settings.defaultTabIcon = value;
+          this.save();
           setIcon(previewIcon, value);
           if (previewIcon.children.length === 0) {
             // not found
@@ -98,20 +96,20 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
 
       new Setting(containerEl).setName('Icon rules for override icon');
 
-      const tabIconRules = containerEl.createEl('div');
-      tabIconRules.className = 'vertical-tabs-view-settings-tab-icon-rules';
+      const tabIconRulesEl = containerEl.createEl('div');
+      tabIconRulesEl.className = 'vertical-tabs-view-settings-tab-icon-rules';
 
-      if (this.plugin.settings.tabIconRules.length === 0) {
-        this.plugin.settings.tabIconRules.push(structuredClone(DEFAULT_TAB_ICON_CONFIG));
+      if (this.settings.tabIconRules.length === 0) {
+        this.settings.tabIconRules.push(structuredClone(DEFAULT_TAB_ICON_CONFIG));
       }
 
-      this.plugin.settings.tabIconRules.forEach((c, i) => {
-        this.addTabIconRule(tabIconRules, c, i);
+      this.settings.tabIconRules.forEach((c, i) => {
+        this.addTabIconRule(tabIconRulesEl, c, i);
       });
 
-      const addBtn = new Setting(tabIconRules).addButton((button) => {
+      const addBtn = new Setting(tabIconRulesEl).addButton((button) => {
         button.setButtonText('Add').onClick(async () => {
-          this.plugin.settings.tabIconRules.push(structuredClone(DEFAULT_TAB_ICON_CONFIG));
+          this.settings.tabIconRules.push(structuredClone(DEFAULT_TAB_ICON_CONFIG));
           this.display();
         });
       });
@@ -148,11 +146,11 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
     new Setting(matchConfigEl)
       .addDropdown((dropdown) => {
         dropdown
-          .setValue(config.matchConfig.target)
           .addOptions(TAB_ICON_OPTIONS.TARGET)
+          .setValue(config.matchConfig.target)
           .onChange(async (v: keyof typeof TAB_ICON_OPTIONS.TARGET) => {
             config.matchConfig.target = v;
-            this.plugin.saveSettings();
+            this.save();
           });
       })
       .setName('Match target');
@@ -161,11 +159,11 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
     new Setting(matchConfigEl)
       .addDropdown((dropdown) => {
         dropdown
-          .setValue(config.matchConfig.condition)
           .addOptions(TAB_ICON_OPTIONS.CONDITION)
+          .setValue(config.matchConfig.condition)
           .onChange(async (v: keyof typeof TAB_ICON_OPTIONS.CONDITION) => {
             config.matchConfig.condition = v;
-            this.plugin.saveSettings();
+            this.save();
           });
       })
       .setName('Match condition');
@@ -175,7 +173,7 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
       .addText((text) => {
         text.setValue(config.matchConfig.value).onChange((v: string) => {
           config.matchConfig.value = v;
-          this.plugin.saveSettings();
+          this.save();
         });
       })
       .setName('Match value')
@@ -189,7 +187,7 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
           .setValue(config.priority)
           .onChange((v) => {
             config.priority = v;
-            this.plugin.saveSettings();
+            this.save();
           })
           .setDynamicTooltip();
       })
@@ -202,7 +200,7 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
       .addText((text) => {
         text.setValue(config.icon).onChange((v) => {
           config.icon = v;
-          this.plugin.saveSettings();
+          this.save();
           setIcon(previewIcon, v);
           if (previewIcon.children.length === 0) {
             // not found
@@ -223,8 +221,8 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
     const removeBtn = removeBtnWrapper.createEl('button');
     removeBtn.setText('Remove');
     removeBtn.onclick = () => {
-      this.plugin.settings.tabIconRules.splice(index, 1);
-      this.plugin.saveSettings();
+      this.settings.tabIconRules.splice(index, 1);
+      this.save();
       this.display();
     };
   }

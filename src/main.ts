@@ -32,17 +32,17 @@ export default class VerticalTabsView extends Plugin {
       Array.isArray(this.settings.tabIconConfigs) &&
       this.settings.tabIconConfigs.length > 0
     ) {
-      this.settings.tabIconRules = this.settings.tabIconConfigs;
+      this.settings.tabIconRules = structuredClone(this.settings.tabIconConfigs);
       delete this.settings.tabIconConfigs;
-      this.saveSettings();
+      this.saveSettings(this.settings);
     }
   }
 
-  async saveSettings() {
-    await this.saveData(this.settings);
+  async saveSettings(settings: VerticalTabsViewSettings) {
+    await this.saveData(settings);
+    this.settings = settings;
     const view = this.getView();
     if (!view) return;
-    view.setSettings(this.settings);
     view.updateView();
   }
 

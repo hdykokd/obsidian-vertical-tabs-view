@@ -59,8 +59,8 @@ export class VerticalTabsViewView extends ItemView {
   }
   setSettings(settings: VerticalTabsViewSettings) {
     this.settings = settings;
-    const tabIconRules = structuredClone(settings.tabIconRules) as TabIconRule[];
-    this.tabIconRules = tabIconRules.sort((a, b) => b.priority - a.priority);
+    this.tabIconRules = settings.tabIconRules.sort((a, b) => b.priority - a.priority);
+    this.updateView();
   }
 
   getViewType() {
