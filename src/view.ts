@@ -117,8 +117,9 @@ export class VerticalTabsViewView extends ItemView {
     const ul = this.contentEl.querySelector(`#${VIEW_LIST_ID}`);
     if (!ul) return;
 
-    const layout = this.app.workspace.getLayout();
-    const leaveIdsInMain = this.collectLeafIds(layout.main.children);
+    const root = this.app.workspace.rootSplit;
+    // @ts-expect-error
+    const leaveIdsInMain = this.collectLeafIds(root.children);
 
     // @ts-expect-error
     const viewTypes = Object.keys(this.app.viewRegistry.viewByType);
