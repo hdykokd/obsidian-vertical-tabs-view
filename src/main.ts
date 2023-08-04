@@ -60,7 +60,7 @@ export default class VerticalTabsView extends Plugin {
       callback: async () => {
         const view = this.getView();
         if (!view) return;
-        view.cyclePreviousTab();
+        await view.cyclePreviousTab();
       },
     });
     this.addCommand({
@@ -69,7 +69,7 @@ export default class VerticalTabsView extends Plugin {
       callback: async () => {
         const view = this.getView();
         if (!view) return;
-        view.cycleNextTab();
+        await view.cycleNextTab();
       },
     });
   }

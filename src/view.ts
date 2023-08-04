@@ -3,7 +3,7 @@ import { VerticalTabsViewSettings } from './setting';
 import { TabIconRule } from './types';
 import { getMatchedTabIconConfig } from './util/view';
 import Sortable, { type SortableEvent } from 'sortablejs';
-import { setActiveLeafById } from './util/leaf';
+import { setActiveLeaf, setActiveLeafById } from './util/leaf';
 
 const VIEW_PREFIX = 'vertical-tabs-view';
 const VIEW_CONTENT_ID = VIEW_PREFIX + '-content';
@@ -90,20 +90,20 @@ export class VerticalTabsViewView extends ItemView {
     if (!leaf) return;
     return this.state.tabIdToIndex[leaf.id];
   }
-  cycleNextTab() {
+  async cycleNextTab() {
     const currentTabIndex = this.getActiveLeafIndex();
     if (currentTabIndex == null) return;
     const newTabIndex = (currentTabIndex + 1) % this.state.sortedTabIds.length;
-    setActiveLeafById(this.app, this.state.sortedTabIds[newTabIndex]);
+    await setActiveLeafById(this.app, this.state.sortedTabIds[newTabIndex]);
   }
-  cyclePreviousTab() {
+  async cyclePreviousTab() {
     const currentTabIndex = this.getActiveLeafIndex();
     if (currentTabIndex == null) return;
     let newTabIndex = (currentTabIndex - 1) % this.state.sortedTabIds.length;
     if (newTabIndex < 0) {
       newTabIndex += this.state.sortedTabIds.length;
     }
-    setActiveLeafById(this.app, this.state.sortedTabIds[newTabIndex]);
+    await setActiveLeafById(this.app, this.state.sortedTabIds[newTabIndex]);
   }
 
   collectLeafIds(nodes: LayoutNode[], leaveIds: string[] = []) {
@@ -233,14 +233,14 @@ export class VerticalTabsViewView extends ItemView {
     if (activeLeaf && activeLeaf.id === leaf.id) {
       listItem.className += ' focused';
     }
-    listItem.onmousedown = (ev) => {
+    listItem.onmousedown = async (ev) => {
       if (ev.target instanceof SVGElement) {
         // icon
         return;
       }
       document.querySelector(`.${VIEW_LIST_ITEM_CLASS}.focused`)?.removeClass('focused');
-      this.app.workspace.setActiveLeaf(leaf);
       listItem.className += ' focused';
+      await setActiveLeaf(this.app, leaf);
     };
 
     const listItemLeftContainer = document.createElement('div');
