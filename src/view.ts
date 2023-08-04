@@ -49,6 +49,11 @@ export class VerticalTabsViewView extends ItemView {
     }
 
     this.registerEvent(
+      this.app.workspace.on('layout-change', () => {
+        this.updateView();
+      }),
+    );
+    this.registerEvent(
       this.app.workspace.on('active-leaf-change', (leaf) => {
         if (!leaf) return;
         const state = leaf.getViewState();
