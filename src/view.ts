@@ -1,4 +1,4 @@
-import { ItemView, setIcon, WorkspaceLeaf, WorkspaceMobileDrawer } from 'obsidian';
+import { ItemView, setIcon, WorkspaceLeaf } from 'obsidian';
 import { VerticalTabsViewSettings } from './setting';
 import { TabIconRule } from './types';
 import { getMatchedTabIconConfig } from './util/view';
