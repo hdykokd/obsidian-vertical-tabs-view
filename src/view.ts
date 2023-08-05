@@ -1,4 +1,4 @@
-import { ItemView, setIcon, WorkspaceLeaf } from 'obsidian';
+import { ItemView, setIcon, WorkspaceLeaf, WorkspaceMobileDrawer } from 'obsidian';
 import { VerticalTabsViewSettings } from './setting';
 import { TabIconRule } from './types';
 import { getMatchedTabIconConfig } from './util/view';
@@ -235,12 +235,20 @@ export class VerticalTabsViewView extends ItemView {
     }
     listItem.onmousedown = async (ev) => {
       if (ev.target instanceof SVGElement) {
-        // icon
-        return;
+        return; // icon
       }
       document.querySelector(`.${VIEW_LIST_ITEM_CLASS}.focused`)?.removeClass('focused');
       listItem.className += ' focused';
       await setActiveLeaf(this.app, leaf);
+
+      if ((this.app as unknown as { isMobile: boolean }).isMobile) {
+        if (!this.app.workspace.leftSplit?.collapsed) {
+          this.app.workspace.leftSplit.collapse();
+        }
+        if (!this.app.workspace.rightSplit?.collapsed) {
+          this.app.workspace.rightSplit.collapse();
+        }
+      }
     };
 
     const listItemLeftContainer = document.createElement('div');
