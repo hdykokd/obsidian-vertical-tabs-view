@@ -131,17 +131,16 @@ export class VerticalTabsViewView extends ItemView {
     // detect empty(new) tab
     viewTypes.push('empty');
 
-    const leaves = viewTypes
-      .map((t: string) => this.app.workspace.getLeavesOfType(t))
-      .flat()
-      .filter((l: Leaf) => {
-        return leaveIdsInMain.includes(l.id);
-      })
-      .sort((a: Leaf, b: Leaf) => {
-        const aPos = this.state.tabIdToIndex[a.id] ?? Infinity;
-        const bPos = this.state.tabIdToIndex[b.id] ?? Infinity;
-        return aPos - bPos;
-      });
+    const leaves: Leaf[] = [];
+    this.app.workspace.iterateRootLeaves((leaf: Leaf) => {
+      if (!leaveIdsInMain.includes(leaf.id)) return;
+      leaves.push(leaf);
+    });
+    const sortedLeaves = leaves.slice().sort((a, b) => {
+      const aPos = this.state.tabIdToIndex[a.id] ?? Infinity;
+      const bPos = this.state.tabIdToIndex[b.id] ?? Infinity;
+      return aPos - bPos;
+    });
 
     const activeLeaf = this.app.workspace.getMostRecentLeaf();
 
@@ -151,7 +150,7 @@ export class VerticalTabsViewView extends ItemView {
     this.state.tabIdToIndex = {};
     this.state.sortedTabIds = [];
 
-    leaves.forEach((l: Leaf, index) => {
+    sortedLeaves.forEach((l: Leaf, index) => {
       this.state.tabIdToIndex[l.id] = index;
       this.state.sortedTabIds.push(l.id);
       listItems.push(this.createListItemEl(l, activeLeaf as Leaf));
