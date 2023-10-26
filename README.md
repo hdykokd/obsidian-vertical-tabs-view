@@ -14,7 +14,10 @@
 
 ### Community
 
-Not published yet.
+1. Open Settings
+2. Click "Browse" in Community plugins
+3. Search for "vertical tabs view"
+4. Click "Install"
 
 ### BRAT
 
