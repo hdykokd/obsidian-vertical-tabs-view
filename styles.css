@@ -80,7 +80,7 @@ ul.vertical-tabs-view-list {
 }
 
 .vertical-tabs-view-list li.focused {
-  color: var(--tab-text-color-focused);
+  color: var(--tab-text-color-focused-active-current);
   background-color: var(--tab-background-active);
 }
 
