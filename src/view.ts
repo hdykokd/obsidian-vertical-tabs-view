@@ -54,15 +54,17 @@ export class VerticalTabsViewView extends ItemView {
 
     this.registerEvent(
       this.app.workspace.on('layout-change', () => {
+        const activeLeaf = this.getActiveLeaf();
+        store.activeLeafId.set(activeLeaf.id);
         this.updateView();
       }),
     );
     this.registerEvent(
-      this.app.workspace.on('active-leaf-change', (leaf) => {
+      this.app.workspace.on('active-leaf-change', (leaf: Leaf) => {
         if (!leaf) return;
         const state = leaf.getViewState();
         if (state.type === VIEW_TYPE_VERTICAL_TABS) return;
-        this.updateView();
+        store.activeLeafId.set(leaf.id);
       }),
     );
   }
@@ -114,7 +116,6 @@ export class VerticalTabsViewView extends ItemView {
   }
 
   updateView() {
-    store.activeLeafId.set(this.getActiveLeaf().id);
     store.leaves.set(this.getSortedLeaves());
   }
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { afterUpdate, onMount, tick } from 'svelte';
   import { setIcon } from 'obsidian';
   import Sortable, { type SortableEvent } from 'sortablejs';
   import { X, Pin, PinOff } from 'lucide-svelte';
@@ -99,7 +99,19 @@
   const handleClickClose = (ev: MouseEvent, leaf: Leaf) => {
     ev.stopPropagation();
     leaf.detach();
-    updateView.bind(view)();
+
+    if (leaf.id === activeLeafId) {
+      if (leaf.id === leaves[0].id && leaves[1]) {
+        activeLeafId = leaves[1].id;
+      } else if (leaf.id === leaves.at(-1)?.id && leaves.at(-2)) {
+        activeLeafId = leaves.at(-2)!.id;
+      } else {
+        const index = state.tabIdToIndex[leaf.id];
+        if (leaves[index - 1]) {
+          activeLeafId = leaves[index - 1].id;
+        }
+      }
+    }
   };
   const handleClickPin = (ev: MouseEvent, leaf: Leaf) => {
     ev.stopPropagation();
@@ -112,8 +124,8 @@
     updateView.bind(view)();
   };
 
-  const scrollIntoActiveListItem = () => {
-    const activeListItem = document.querySelector(`.${VIEW_LIST_ITEM_CLASS}.focused`);
+  function scrollIntoActiveListItem() {
+    const activeListItem = document.querySelector(`li[data-leaf-id="${activeLeafId}"]`);
     if (!activeListItem) return;
 
     const listItemRect = activeListItem.getBoundingClientRect();
@@ -124,7 +136,7 @@
     if (listItemRect.top > parentRect.top || listItemRect.bottom < parentRect.bottom) {
       activeListItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-  };
+  }
 
   const updateState = (leaves: Leaf[]) => {
     state.tabIdToIndex = {};
@@ -137,9 +149,9 @@
   };
   $: {
     updateState(leaves);
-    scrollIntoActiveListItem();
     setTabIcon();
   }
+  $: activeLeafId && scrollIntoActiveListItem();
 
   const setTabIcon = () => {
     leaves.forEach((leaf) => {
@@ -205,8 +217,8 @@
         }
       },
     });
-    scrollIntoActiveListItem();
     setTabIcon();
+    scrollIntoActiveListItem();
   });
 </script>
 
