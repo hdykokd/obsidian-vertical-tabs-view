@@ -8,6 +8,12 @@
   import type { VerticalTabsViewSettings } from '../setting';
   import type { VerticalTabsViewView } from '../view';
 
+  const VIEW_PREFIX = 'vertical-tabs-view';
+  const VIEW_LIST_ITEM_CLASS = VIEW_PREFIX + '-list-item';
+  const STORAGE_KEY = {
+    LIST_STATE: VIEW_PREFIX + 'list-state',
+  } as const;
+
   let plugin: VerticalTabsView;
   let settings: VerticalTabsViewSettings;
   let leaves: Leaf[];
@@ -25,12 +31,6 @@
     activeLeafId = v;
   });
 
-  const VIEW_PREFIX = 'vertical-tabs-view';
-  const VIEW_LIST_ITEM_CLASS = VIEW_PREFIX + '-list-item';
-  const STORAGE_KEY = {
-    LIST_STATE: VIEW_PREFIX + 'list-state',
-  } as const;
-
   export let view: VerticalTabsViewView;
   export let state: {
     tabIdToIndex: {
@@ -47,20 +47,6 @@
   export let viewContentId: string;
   export let setActiveLeaf: Function;
   export let updateView: Function;
-
-  const scrollIntoActiveListItem = () => {
-    const activeListItem = document.querySelector(`.${VIEW_LIST_ITEM_CLASS}.is-active`);
-    if (!activeListItem) return;
-
-    const listItemRect = activeListItem.getBoundingClientRect();
-    if (!listItemRect) return;
-    const parentRect = activeListItem.parentElement?.getBoundingClientRect();
-    if (!parentRect) return;
-
-    if (listItemRect.top > parentRect.top || listItemRect.bottom < parentRect.bottom) {
-      activeListItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  };
 
   const getDirname = (leaf: Leaf) => {
     // @ts-expect-error
@@ -122,6 +108,32 @@
     updateView.bind(view)();
   };
 
+  const scrollIntoActiveListItem = () => {
+    const activeListItem = document.querySelector(`.${VIEW_LIST_ITEM_CLASS}.focused`);
+    if (!activeListItem) return;
+
+    const listItemRect = activeListItem.getBoundingClientRect();
+    if (!listItemRect) return;
+    const parentRect = activeListItem.parentElement?.getBoundingClientRect();
+    if (!parentRect) return;
+
+    if (listItemRect.top > parentRect.top || listItemRect.bottom < parentRect.bottom) {
+      activeListItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  };
+
+  const updateState = (leaves: Leaf[]) => {
+    leaves.forEach((l, index) => {
+      state.tabIdToIndex[l.id] = index;
+      state.sortedTabIds.push(l.id);
+    });
+    localStorage.setItem(STORAGE_KEY.LIST_STATE, JSON.stringify(state));
+  };
+  $: {
+    updateState(leaves);
+    scrollIntoActiveListItem();
+  }
+
   onMount(() => {
     Sortable.create(list, {
       group: 'vertical-tabs-view-list',
@@ -161,7 +173,6 @@
         }
       },
     });
-
     scrollIntoActiveListItem();
   });
 </script>
