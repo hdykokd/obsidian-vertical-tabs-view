@@ -1,6 +1,6 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import type { VerticalTabsViewSettings } from './setting';
-import { setActiveLeaf, setActiveLeafById } from './util/leaf';
+import { setActiveLeafById } from './util/leaf';
 import Tabs from './components/Tabs.svelte';
 
 import type VerticalTabsView from './main';
@@ -97,7 +97,6 @@ export class VerticalTabsViewView extends ItemView {
       props: {
         view: this,
         state: this.state,
-        setActiveLeaf: this.setActiveLeaf,
         updateView: this.updateView,
         viewContentId: VIEW_CONTENT_ID,
       },
@@ -109,10 +108,6 @@ export class VerticalTabsViewView extends ItemView {
     return activeLeaf;
   }
 
-  async setActiveLeaf(leaf: Leaf) {
-    await setActiveLeaf(this.app, leaf);
-    store.activeLeafId.set(leaf.id);
-  }
   async setActiveLeafById(id: string) {
     await setActiveLeafById(this.app, id);
     store.activeLeafId.set(id);

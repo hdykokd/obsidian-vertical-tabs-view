@@ -1,13 +1,14 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { setIcon } from 'obsidian';
+  import Sortable, { type SortableEvent } from 'sortablejs';
+  import { X, Pin, PinOff } from 'lucide-svelte';
   import store from '../store';
   import type VerticalTabsView from '../main';
-  import Sortable, { type SortableEvent } from 'sortablejs';
-  import { onMount } from 'svelte';
   import type { Leaf, TabIconRule } from '../types';
-  import { X, Pin, PinOff } from 'lucide-svelte';
   import type { VerticalTabsViewView } from '../view';
-  import { setIcon } from 'obsidian';
-  import { getMatchedTabIconConfig } from 'src/util/view';
+  import { getMatchedTabIconConfig } from '../util/view';
+  import { setActiveLeaf } from '../util/leaf';
 
   const VIEW_PREFIX = 'vertical-tabs-view';
   const VIEW_LIST_ITEM_CLASS = VIEW_PREFIX + '-list-item';
@@ -43,7 +44,6 @@
   let list: HTMLElement;
 
   export let viewContentId: string;
-  export let setActiveLeaf: Function;
   export let updateView: Function;
   let tabIconRules: TabIconRule[] = [];
 
@@ -84,7 +84,8 @@
     if (ev.target instanceof SVGElement) {
       return; // icon
     }
-    await setActiveLeaf.bind(plugin)(leaf);
+    await setActiveLeaf(plugin.app, leaf);
+    activeLeafId = leaf.id;
 
     if ((plugin.app as unknown as { isMobile: boolean }).isMobile) {
       if (!plugin.app.workspace.leftSplit?.collapsed) {
