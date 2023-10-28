@@ -3,24 +3,23 @@
   import type VerticalTabsView from '../main';
   import Sortable, { type SortableEvent } from 'sortablejs';
   import { onMount } from 'svelte';
-  import type { Leaf } from '../types';
+  import type { Leaf, TabIconRule } from '../types';
   import { X, Pin, PinOff } from 'lucide-svelte';
   import type { VerticalTabsViewSettings } from '../setting';
   import type { VerticalTabsViewView } from '../view';
+  import { setIcon } from 'obsidian';
+  import { getMatchedTabIconConfig } from 'src/util/view';
 
   const VIEW_PREFIX = 'vertical-tabs-view';
   const VIEW_LIST_ITEM_CLASS = VIEW_PREFIX + '-list-item';
+  const VIEW_LIST_ITEM_TAB_ICON_CLASS = VIEW_PREFIX + '-list-item-tab-icon';
   const STORAGE_KEY = {
     LIST_STATE: VIEW_PREFIX + 'list-state',
   } as const;
 
   let plugin: VerticalTabsView;
-  let settings: VerticalTabsViewSettings;
   let leaves: Leaf[];
   let activeLeafId: string;
-  store.settings.subscribe((v) => {
-    settings = v;
-  });
   store.plugin.subscribe((v) => {
     plugin = v;
   });
@@ -47,6 +46,14 @@
   export let viewContentId: string;
   export let setActiveLeaf: Function;
   export let updateView: Function;
+  let tabIconRules: TabIconRule[] = [];
+
+  const getTabIconRules = () => {
+    return plugin.settings.tabIconRules.sort((a, b) => b.priority - a.priority);
+  };
+  $: tabIconRules = getTabIconRules();
+
+  const regexCompileCache: Record<string, RegExp> = {};
 
   const getDirname = (leaf: Leaf) => {
     // @ts-expect-error
@@ -89,19 +96,16 @@
       }
     }
   };
-
   const handleClickClose = (ev: MouseEvent, leaf: Leaf) => {
     ev.stopPropagation();
     leaf.detach();
     updateView.bind(view)();
   };
-
   const handleClickPin = (ev: MouseEvent, leaf: Leaf) => {
     ev.stopPropagation();
     leaf.setPinned(true);
     updateView.bind(view)();
   };
-
   const handleClickPinOff = (ev: MouseEvent, leaf: Leaf) => {
     ev.stopPropagation();
     leaf.setPinned(false);
@@ -123,6 +127,8 @@
   };
 
   const updateState = (leaves: Leaf[]) => {
+    state.tabIdToIndex = {};
+    state.sortedTabIds = [];
     leaves.forEach((l, index) => {
       state.tabIdToIndex[l.id] = index;
       state.sortedTabIds.push(l.id);
@@ -132,7 +138,33 @@
   $: {
     updateState(leaves);
     scrollIntoActiveListItem();
+    setTabIcon();
   }
+
+  const setTabIcon = () => {
+    leaves.forEach((leaf) => {
+      const selector = `li[data-leaf-id="${leaf.id}"] .${VIEW_LIST_ITEM_TAB_ICON_CLASS}`;
+      const tabIcon = document.querySelector(selector) as HTMLElement;
+      if (!tabIcon) return;
+
+      const matchedConfig = getMatchedTabIconConfig(
+        tabIconRules,
+        getDirname(leaf),
+        getFilename(leaf),
+        regexCompileCache,
+      );
+      if (matchedConfig) {
+        // override
+        setIcon(tabIcon, matchedConfig.icon);
+      } else if (plugin.settings.defaultTabIcon) {
+        // set default
+        setIcon(tabIcon, plugin.settings.defaultTabIcon);
+      } else if (leaf.getViewState().type === 'markdown') {
+        // remove
+        setIcon(tabIcon, '');
+      }
+    });
+  };
 
   onMount(() => {
     Sortable.create(list, {
@@ -174,6 +206,7 @@
       },
     });
     scrollIntoActiveListItem();
+    setTabIcon();
   });
 </script>
 
@@ -200,14 +233,14 @@
           </div>
         </div>
         <div class="vertical-tabs-view-list-item-right-container">
-          {#if !leaf.pinned && settings.showPinIconIfNotPinned}
+          {#if !leaf.pinned && plugin.settings.showPinIconIfNotPinned}
             <div
               class="vertical-tabs-view-list-item-icon vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-pin"
               on:click={(e) => handleClickPin(e, leaf)}
             >
               <Pin size={20} strokeWidth={2} />
             </div>
-          {:else if leaf.pinned && settings.showPinnedIcon}
+          {:else if leaf.pinned && plugin.settings.showPinnedIcon}
             <div
               class="vertical-tabs-view-list-item-icon vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-pin"
               on:click={(e) => handleClickPinOff(e, leaf)}

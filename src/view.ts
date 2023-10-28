@@ -28,9 +28,6 @@ export class VerticalTabsViewView extends ItemView {
   Tabs: Tabs;
 
   settings: VerticalTabsViewSettings;
-  tabIconRules: TabIconRule[];
-
-  regexCompileCache: Record<string, RegExp> = {};
 
   state: {
     tabIdToIndex: {
@@ -42,10 +39,10 @@ export class VerticalTabsViewView extends ItemView {
     sortedTabIds: [],
   };
 
-  constructor(plugin: VerticalTabsView, settings: VerticalTabsViewSettings, leaf: WorkspaceLeaf) {
+  constructor(plugin: VerticalTabsView, leaf: WorkspaceLeaf) {
     super(leaf);
     this.plugin = plugin;
-    this.setSettings(settings);
+    this.settings = plugin.settings;
 
     const savedState = localStorage.getItem(STORAGE_KEY.LIST_STATE);
     if (savedState) {
@@ -71,9 +68,8 @@ export class VerticalTabsViewView extends ItemView {
     );
   }
   setSettings(settings: VerticalTabsViewSettings) {
-    this.settings = settings;
-    store.settings.set(this.settings);
-    this.tabIconRules = settings.tabIconRules.sort((a, b) => b.priority - a.priority);
+    this.plugin.settings = settings;
+    store.plugin.set(this.plugin);
     this.updateView();
   }
 
@@ -91,7 +87,6 @@ export class VerticalTabsViewView extends ItemView {
   }
   async onOpen() {
     store.plugin.set(this.plugin as VerticalTabsView);
-    store.settings.set(this.settings);
     store.leaves.set(this.getSortedLeaves());
     store.activeLeafId.set(this.getActiveLeaf().id);
 
@@ -125,6 +120,7 @@ export class VerticalTabsViewView extends ItemView {
   }
 
   updateView() {
+    store.activeLeafId.set(this.getActiveLeaf().id);
     store.leaves.set(this.getSortedLeaves());
   }
 
