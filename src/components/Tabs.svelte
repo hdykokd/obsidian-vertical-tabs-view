@@ -240,7 +240,9 @@
           </div>
           <div class="vertical-tabs-view-list-item-tab-icon vertical-tabs-view-list-item-icon" />
           <div class="vertical-tabs-view-list-item-name-container">
-            <span class="vertical-tabs-view-list-item-dirname">{getDirname(leaf)}</span>
+            {#if plugin.settings.showDirectory}
+              <span class="vertical-tabs-view-list-item-dirname">{getDirname(leaf)}</span>
+            {/if}
             <span class="vertical-tabs-view-list-item-title">{getFilename(leaf)}</span>
           </div>
         </div>
