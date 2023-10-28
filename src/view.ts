@@ -87,8 +87,7 @@ export class VerticalTabsViewView extends ItemView {
     return 'Vertical Tabs';
   }
   async onClose() {
-    this.contentEl.empty();
-    // this.Tabs.$destroy();
+    this.Tabs.$destroy();
   }
   async onOpen() {
     store.plugin.set(this.plugin as VerticalTabsView);
@@ -98,6 +97,7 @@ export class VerticalTabsViewView extends ItemView {
 
     const el = this.contentEl;
     el.id = VIEW_CONTENT_ID;
+
     this.Tabs = new Tabs({
       target: this.contentEl,
       props: {
@@ -108,7 +108,6 @@ export class VerticalTabsViewView extends ItemView {
         viewContentId: VIEW_CONTENT_ID,
       },
     });
-    // this.updateView();
   }
 
   getActiveLeaf() {
