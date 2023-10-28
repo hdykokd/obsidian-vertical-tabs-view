@@ -1,6 +1,5 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import type { VerticalTabsViewSettings } from './setting';
-import type { TabIconRule } from './types';
 import { setActiveLeaf, setActiveLeafById } from './util/leaf';
 import Tabs from './components/Tabs.svelte';
 

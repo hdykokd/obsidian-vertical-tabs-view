@@ -5,7 +5,6 @@
   import { onMount } from 'svelte';
   import type { Leaf, TabIconRule } from '../types';
   import { X, Pin, PinOff } from 'lucide-svelte';
-  import type { VerticalTabsViewSettings } from '../setting';
   import type { VerticalTabsViewView } from '../view';
   import { setIcon } from 'obsidian';
   import { getMatchedTabIconConfig } from 'src/util/view';
