@@ -25,6 +25,10 @@ ul.vertical-tabs-view-list {
   text-overflow: ellipsis;
 }
 
+.vertical-tabs-view-list li.vertical-tabs-view-list-item:hover {
+  background-color: var(--background-modifier-hover);
+}
+
 .vertical-tabs-view-list-item-ghost {
   opacity: 0.3;
 }
@@ -132,4 +136,14 @@ ul.vertical-tabs-view-list {
   display: flex;
   justify-content: end;
   margin-top: 1em;
+}
+
+/* context menu */
+button.context-menu-item.vertical-tabs-view-context-menu-item-custom {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-start;
+}
+button.context-menu-item.vertical-tabs-view-context-menu-item-custom span {
+  padding-left: 0.25rem;
 }

@@ -38,6 +38,7 @@
   "packageManager": "pnpm@8.6.5",
   "dependencies": {
     "lucide-svelte": "^0.290.0",
-    "sortablejs": "^1.15.0"
+    "sortablejs": "^1.15.0",
+    "svelte-contextmenu": "^1.0.2"
   }
 }
