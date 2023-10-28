@@ -1,7 +1,7 @@
 import { PluginSettingTab, App, Setting, setIcon } from 'obsidian';
 import { DEFAULT_POSITION_OPTIONS, DEFAULT_TAB_ICON_CONFIG, TAB_ICON_OPTIONS } from './constants';
-import VerticalTabsView from './main';
-import { TabIconRule } from './types';
+import type VerticalTabsView from './main';
+import type { TabIconRule } from './types';
 import { createSelect, createText, createToggle } from './util/setting';
 
 export interface VerticalTabsViewSettings {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_TAB_ICON_CONFIG } from './constants';
-import { TabIconRule } from './types';
+import type { TabIconRule } from './types';
 import { getMatchedTabIconConfig } from './util/view';
 
 const generateConfig = (matchConfig: TabIconRule['matchConfig']) => {

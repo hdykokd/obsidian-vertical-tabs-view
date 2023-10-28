@@ -1,4 +1,4 @@
-import { TabIconRule } from 'src/types';
+import type { TabIconRule } from 'src/types';
 
 export const getMatchedTabIconConfig = (
   configs: TabIconRule[],

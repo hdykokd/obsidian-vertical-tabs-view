@@ -1,4 +1,7 @@
-import { TAB_ICON_OPTIONS } from './constants';
+import type { WorkspaceLeaf } from 'obsidian';
+import type { TAB_ICON_OPTIONS } from './constants';
+
+export type Leaf = WorkspaceLeaf & { id: string; pinned: boolean };
 
 export type TabIconRule = {
   matchConfig: {

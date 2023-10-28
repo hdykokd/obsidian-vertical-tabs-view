@@ -1,6 +1,6 @@
 import { Plugin } from 'obsidian';
 import { log } from './util/message';
-import { VerticalTabsViewSettings, DEFAULT_SETTINGS, VerticalTabsViewSettingTab } from './setting';
+import { type VerticalTabsViewSettings, DEFAULT_SETTINGS, VerticalTabsViewSettingTab } from './setting';
 import { VerticalTabsViewView, VIEW_TYPE_VERTICAL_TABS } from './view';
 
 export default class VerticalTabsView extends Plugin {
@@ -76,7 +76,7 @@ export default class VerticalTabsView extends Plugin {
 
   registerViewExtension() {
     this.registerView(VIEW_TYPE_VERTICAL_TABS, (leaf) => {
-      return new VerticalTabsViewView(this.settings, leaf);
+      return new VerticalTabsViewView(this, leaf);
     });
   }
 
