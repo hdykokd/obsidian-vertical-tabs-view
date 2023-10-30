@@ -401,7 +401,9 @@
             <X size={18} strokeWidth={2} />
           </div>
         {/if}
-        <div class="vertical-tabs-view-list-item-tab-icon vertical-tabs-view-list-item-icon" />
+        {#if plugin.settings.showTabIcon}
+          <div class="vertical-tabs-view-list-item-tab-icon vertical-tabs-view-list-item-icon" />
+        {/if}
         <div class="vertical-tabs-view-list-item-name-container">
           {#if plugin.settings.showDirectory}
             <span class="vertical-tabs-view-list-item-dirname">{getDirname(leaf)}</span>
