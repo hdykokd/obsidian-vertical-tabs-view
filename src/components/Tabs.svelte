@@ -393,12 +393,14 @@
       }}
     >
       <div class="vertical-tabs-view-list-item-left-container">
-        <div
-          class="vertical-tabs-view-list-item-close-btn vertical-tabs-view-list-item-icon"
-          on:click={(e) => handleClickClose(leaf, e, { stopPropagation: true })}
-        >
-          <X size={18} strokeWidth={2} />
-        </div>
+        {#if plugin.settings.showCloseIcon}
+          <div
+            class="vertical-tabs-view-list-item-close-btn vertical-tabs-view-list-item-icon"
+            on:click={(e) => handleClickClose(leaf, e, { stopPropagation: true })}
+          >
+            <X size={18} strokeWidth={2} />
+          </div>
+        {/if}
         <div class="vertical-tabs-view-list-item-tab-icon vertical-tabs-view-list-item-icon" />
         <div class="vertical-tabs-view-list-item-name-container">
           {#if plugin.settings.showDirectory}

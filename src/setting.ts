@@ -7,6 +7,7 @@ import { createSelect, createText, createToggle } from './util/setting';
 export interface VerticalTabsViewSettings {
   defaultPosition: (typeof DEFAULT_POSITION_OPTIONS)[keyof typeof DEFAULT_POSITION_OPTIONS];
   showDirectory: boolean;
+  showCloseIcon: boolean;
   showPinnedIcon: boolean;
   showPinIconIfNotPinned: boolean;
   showTabIcon: boolean;
@@ -19,6 +20,7 @@ export interface VerticalTabsViewSettings {
 export const DEFAULT_SETTINGS: VerticalTabsViewSettings = {
   defaultPosition: 'left',
   showDirectory: true,
+  showCloseIcon: true,
   showPinnedIcon: true,
   showPinIconIfNotPinned: true,
   showTabIcon: true,
@@ -58,6 +60,10 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
     );
     createToggle(containerEl, 'Show directory', '', this.settings.showDirectory, (value) => {
       this.settings.showDirectory = value;
+      this.save();
+    });
+    createToggle(containerEl, 'Show close icon', '', this.settings.showCloseIcon, (value) => {
+      this.settings.showCloseIcon = value;
       this.save();
     });
     createToggle(containerEl, 'Show pinned icon', '', this.settings.showPinnedIcon, (value) => {
