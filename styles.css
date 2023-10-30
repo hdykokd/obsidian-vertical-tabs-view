@@ -19,6 +19,7 @@ ul.vertical-tabs-view-list {
   font-weight: var(--tab-font-weight);
   padding: 2px 0 2px 2px;
   width: 100%;
+  min-height: 2.5rem;
   border-radius: var(--tab-radius);
   overflow: hidden;
   white-space: nowrap;
@@ -56,9 +57,10 @@ ul.vertical-tabs-view-list {
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-tab-icon {
-  margin-right: 0.25em;
-  --icon-size: var(--icon-xs);
-  --icon-stroke: var(--icon-xs-stroke-width);
+  margin: 0 0.25em;
+  min-width: var(--icon-s);
+  --icon-size: var(--icon-s);
+  --icon-stroke: var(--icon-s-stroke-width);
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-close-btn,
@@ -72,10 +74,6 @@ ul.vertical-tabs-view-list {
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn:hover {
   color: var(--tab-text-color-focused);
   background-color: var(--tab-background-active);
-}
-
-.vertical-tabs-view-list li .vertical-tabs-view-list-item-close-btn {
-  margin-right: 0.25em;
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn {
