@@ -11,9 +11,6 @@ dependencies:
   sortablejs:
     specifier: ^1.15.0
     version: 1.15.0
-  svelte-contextmenu:
-    specifier: ^1.0.2
-    version: 1.0.2
 
 devDependencies:
   '@tsconfig/svelte':
@@ -1872,10 +1869,6 @@ packages:
     dependencies:
       has-flag: 4.0.0
     dev: true
-
-  /svelte-contextmenu@1.0.2:
-    resolution: {integrity: sha512-S4mSFnafXhhrDMvP45W7+8+LH45tGFyigMJav4bpc19rD2L3awMJLHg5PY9EAvF8OU9lIMiaUMxEgFlTK/kqPQ==}
-    dev: false
 
   /svelte-preprocess@5.0.4(svelte@4.2.2)(typescript@4.7.4):
     resolution: {integrity: sha512-ABia2QegosxOGsVlsSBJvoWeXy1wUKSfF7SWJdTjLAbx/Y3SrVevvvbFNQqrSJw89+lNSsM58SipmZJ5SRi5iw==}
