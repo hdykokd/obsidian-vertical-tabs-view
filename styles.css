@@ -5,9 +5,8 @@
 
 ul.vertical-tabs-view-list {
   list-style: none;
-  height: 100%;
   padding: 0;
-  margin: 0;
+  margin: 0.1rem 0;
 }
 
 .is-focused .vertical-tabs-view-list li.vertical-tabs-view-list-item {
@@ -137,4 +136,10 @@ ul.vertical-tabs-view-list {
   display: flex;
   justify-content: end;
   margin-top: 1em;
+}
+
+/* See: https://github.com/hdykokd/obsidian-vertical-tabs-view/issues/60 */
+.vertical-tabs-view-list-mobile-margin-block {
+  height: 100%;
+  padding-bottom: 4.5rem;
 }
