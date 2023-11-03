@@ -232,6 +232,9 @@
       draggable: '.vertical-tabs-view-list-item',
       direction: 'vertical',
       ghostClass: 'vertical-tabs-view-list-item-ghost',
+      chosenClass: 'vertical-tabs-view-list-item-chosen',
+      forceFallback: !Platform.isDesktop,
+      fallbackOnBody: !Platform.isDesktop,
       onChange: (ev) => {
         const scrollContainer = document.querySelector(`#${viewContentId}`);
         if (!scrollContainer) return;
