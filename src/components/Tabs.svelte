@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { Menu, Notice, setIcon } from 'obsidian';
+  import { Menu, Platform, setIcon } from 'obsidian';
   import Sortable, { type SortableEvent } from 'sortablejs';
-  import { X, Pin, PinOff, Trash, Trash2 } from 'lucide-svelte';
+  import { X, Pin, PinOff } from 'lucide-svelte';
   import store from '../store';
   import type VerticalTabsView from '../main';
   import type { Leaf, TabIconRule } from '../types';
@@ -225,12 +225,13 @@
   onMount(() => {
     Sortable.create(list, {
       group: 'vertical-tabs-view-list',
-      delay: 10,
+      delay: 100,
       delayOnTouchOnly: true,
-      touchStartThreshold: 1,
+      touchStartThreshold: 3,
+      animation: 150,
+      draggable: '.vertical-tabs-view-list-item',
       direction: 'vertical',
       ghostClass: 'vertical-tabs-view-list-item-ghost',
-      animation: 150,
       onChange: (ev) => {
         const scrollContainer = document.querySelector(`#${viewContentId}`);
         if (!scrollContainer) return;
@@ -408,6 +409,9 @@
       </div>
     </li>
   {/each}
+  {#if leaves.length > 0 && Platform.isMobile}
+    <div class="vertical-tabs-view-list-mobile-margin-block" />
+  {/if}
 </ul>
 
 <style>
