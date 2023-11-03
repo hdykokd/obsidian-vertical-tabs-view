@@ -12,5 +12,6 @@ fi
 pnpm run version
 git add .
 git commit -m "chore: release $version"
-git tag -a $version -m "$version"
+git tag -a "$version" -m "$version"
 git push origin "$version"
+git push
