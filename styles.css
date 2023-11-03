@@ -38,7 +38,10 @@ ul.vertical-tabs-view-list {
 }
 
 .vertical-tabs-view-list-item-ghost {
-  opacity: 0.3;
+  opacity: 0.6;
+}
+.is-mobile .vertical-tabs-view-list-item-chosen {
+  display: none;
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-left-container,
