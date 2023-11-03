@@ -10,6 +10,9 @@ ul.vertical-tabs-view-list {
   margin: 0;
 }
 
+.is-focused .vertical-tabs-view-list li.vertical-tabs-view-list-item {
+  color: var(--tab-text-color-focused);
+}
 .vertical-tabs-view-list li.vertical-tabs-view-list-item {
   display: flex;
   flex-direction: row;
@@ -24,6 +27,11 @@ ul.vertical-tabs-view-list {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+.is-focused .vertical-tabs-view-list li.focused,
+.vertical-tabs-view-list li.focused {
+  color: var(--tab-text-color-focused-active-current);
+  background-color: var(--tab-background-active);
 }
 
 .vertical-tabs-view-list li.vertical-tabs-view-list-item:hover {
@@ -79,11 +87,6 @@ ul.vertical-tabs-view-list {
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn {
   margin-right: 0.5em;
   margin-top: 0.5em;
-}
-
-.vertical-tabs-view-list li.focused {
-  color: var(--tab-text-color-focused-active-current);
-  background-color: var(--tab-background-active);
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-name-container {
