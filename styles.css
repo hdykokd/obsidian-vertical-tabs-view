@@ -121,7 +121,6 @@ ul.vertical-tabs-view-list {
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-dirname {
-  color: var(--tab-text-color);
   font-size: var(--font-ui-smaller);
 }
 
