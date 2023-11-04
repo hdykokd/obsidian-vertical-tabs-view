@@ -25,7 +25,6 @@ ul.vertical-tabs-view-list {
   border-radius: var(--tab-radius);
   overflow: hidden;
   white-space: nowrap;
-  text-overflow: ellipsis;
 }
 .is-focused .vertical-tabs-view-list li.focused,
 .vertical-tabs-view-list li.focused {
@@ -49,12 +48,29 @@ ul.vertical-tabs-view-list {
   display: flex;
   flex-direction: row;
   align-items: center;
+  overflow: auto;
 }
 
-.vertical-tabs-view-list li .vertical-tabs-view-list-item-left-container {
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-name-container {
   display: flex;
-  overflow: hidden;
-  margin-left: 0.25em;
+  overflow: auto;
+  margin: 0 0.25em;
+  scrollbar-width: thin;
+}
+
+/* scrollbar */
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-name-container::-webkit-scrollbar {
+  margin-top: 0.25em;
+  height: 0.25em;
+}
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-name-container::-webkit-scrollbar-track {
+  background-color: var(--scrollbar-bg);
+}
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-name-container::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-bg);
+}
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-name-container::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-active-thumb-bg);
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-right-container {
@@ -98,14 +114,10 @@ ul.vertical-tabs-view-list {
   margin-left: 0.25em;
   line-height: 1.4em;
   width: 100%;
-  overflow: hidden;
 }
 
-.vertical-tabs-view-list li .vertical-tabs-view-list-item-dirname,
-.vertical-tabs-view-list li .vertical-tabs-view-list-item-title {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-name-container::-webkit-scrollbar {
+  width: 2rem;
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-dirname {
