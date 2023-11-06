@@ -116,7 +116,13 @@ export class VerticalTabsViewView extends ItemView {
   }
 
   updateView() {
-    store.leaves.set(this.getSortedLeaves());
+    const leaves = this.getSortedLeaves();
+    leaves.forEach((l) => {
+      l.on('pinned-change', () => {
+        store.leaves.set(leaves);
+      });
+    });
+    store.leaves.set(leaves);
   }
 
   private getActiveLeafIndex() {

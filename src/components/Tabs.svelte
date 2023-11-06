@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { Menu, Platform, setIcon } from 'obsidian';
   import Sortable, { type SortableEvent } from 'sortablejs';
-  import { X, Pin, PinOff } from 'lucide-svelte';
+  import { X, Pin } from 'lucide-svelte';
   import store from '../store';
   import type VerticalTabsView from '../main';
   import type { Leaf, TabIconRule } from '../types';
@@ -394,14 +394,14 @@
         </div>
       </div>
       <div class="vertical-tabs-view-list-item-right-container">
-        {#if !leaf.pinned && plugin.settings.showPinIconIfNotPinned}
+        {#if plugin.settings.showPinIconIfNotPinned && !leaf.pinned}
           <div
             class="vertical-tabs-view-list-item-icon vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-pin"
             on:click={(e) => handleClickPin(e, leaf)}
           >
             <Pin size={20} />
           </div>
-        {:else if leaf.pinned && plugin.settings.showPinnedIcon}
+        {:else if plugin.settings.showPinnedIcon && leaf.pinned}
           <div
             class="vertical-tabs-view-list-item-icon vertical-tabs-view-list-item-icon-pinned vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-pin"
             on:click={(e) => handleClickPinOff(e, leaf)}
