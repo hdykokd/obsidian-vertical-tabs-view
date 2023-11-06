@@ -102,6 +102,10 @@ ul.vertical-tabs-view-list {
   background-color: var(--tab-background-active);
 }
 
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-icon-pinned {
+  color: var(--text-accent);
+}
+
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn {
   margin-right: 0.5em;
   margin-top: 0.5em;
