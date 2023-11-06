@@ -399,14 +399,14 @@
             class="vertical-tabs-view-list-item-icon vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-pin"
             on:click={(e) => handleClickPin(e, leaf)}
           >
-            <Pin size={20} strokeWidth={2} />
+            <Pin size={20} />
           </div>
         {:else if leaf.pinned && plugin.settings.showPinnedIcon}
           <div
-            class="vertical-tabs-view-list-item-icon vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-pin"
+            class="vertical-tabs-view-list-item-icon vertical-tabs-view-list-item-icon-pinned vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-pin"
             on:click={(e) => handleClickPinOff(e, leaf)}
           >
-            <PinOff size={20} strokeWidth={2} />
+            <Pin size={20} />
           </div>
         {/if}
       </div>
