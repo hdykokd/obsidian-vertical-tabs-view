@@ -333,7 +333,7 @@
     menu.addSeparator();
     menu.addItem((item) => {
       return item
-        .setTitle('Trach local')
+        .setTitle('Trash local')
         .setIcon('trash')
         .onClick((e: MouseEvent) => {
           e.preventDefault();
@@ -342,7 +342,7 @@
     });
     menu.addItem((item) => {
       return item
-        .setTitle('Trach system')
+        .setTitle('Trash system')
         .setIcon('trash')
         .onClick((e: MouseEvent) => {
           e.preventDefault();
