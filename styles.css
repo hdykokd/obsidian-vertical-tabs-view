@@ -81,6 +81,9 @@ ul.vertical-tabs-view-list {
   color: var(--tab-text-color);
   padding-top: 0.25em;
 }
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-icon._hidden {
+  display: none;
+}
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-tab-icon {
   margin: 0 0.25em;
@@ -105,12 +108,17 @@ ul.vertical-tabs-view-list {
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn {
   margin-right: 0.5em;
 }
+
+.vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn-pin {
+  opacity: .75
+}
+
 .vertical-tabs-view-list-item-close-btn > svg,
-.vertical-tabs-view-list-item-pin-btn > svg, 
+.vertical-tabs-view-list-item-pin-btn > svg,
 .vertical-tabs-view-list-item-tab-icon > svg {
-    width: 1.5em;
-    height: 1.5em;
-    stroke-width: var(--icon-s-stroke-width);
+  width: 1.5em;
+  height: 1.5em;
+  stroke-width: var(--icon-s-stroke-width);
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-name-container {
