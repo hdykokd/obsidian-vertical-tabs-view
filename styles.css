@@ -86,7 +86,7 @@ ul.vertical-tabs-view-list {
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-tab-icon {
-  margin: 0 0.25em;
+  margin: 0 0.5em 0 0.25em;
   min-width: var(--icon-s);
 }
 
