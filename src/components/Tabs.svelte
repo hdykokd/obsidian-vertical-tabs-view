@@ -202,6 +202,12 @@
       const selector = `li[data-leaf-id="${leaf.id}"] .${VIEW_LIST_ITEM_TAB_ICON_CLASS}`;
       const tabIcon = document.querySelector(selector) as HTMLElement;
       if (!tabIcon) return;
+      if (!plugin.settings.showTabIcon) {
+        tabIcon.addClass('_hidden');
+        return;
+      } else {
+        tabIcon.removeClass('_hidden');
+      }
 
       const matchedConfig = getMatchedTabIconConfig(
         tabIconRules,
@@ -383,9 +389,7 @@
             <X />
           </div>
         {/if}
-        {#if plugin.settings.showTabIcon}
-          <div class="vertical-tabs-view-list-item-tab-icon vertical-tabs-view-list-item-icon" />
-        {/if}
+        <div class="vertical-tabs-view-list-item-tab-icon vertical-tabs-view-list-item-icon" />
         <div class="vertical-tabs-view-list-item-name-container">
           {#if plugin.settings.showDirectory}
             <span class="vertical-tabs-view-list-item-dirname">{getDirname(leaf)}</span>
