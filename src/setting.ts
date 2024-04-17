@@ -11,6 +11,7 @@ export interface VerticalTabsViewSettings {
   showPinnedIcon: boolean;
   showPinIconIfNotPinned: boolean;
   showTabIcon: boolean;
+  customizeTabIcon: boolean;
   defaultTabIcon: string;
   tabIconRules: TabIconRule[];
   // deprecated
@@ -24,6 +25,7 @@ export const DEFAULT_SETTINGS: VerticalTabsViewSettings = {
   showPinnedIcon: true,
   showPinIconIfNotPinned: true,
   showTabIcon: true,
+  customizeTabIcon: false,
   defaultTabIcon: 'file',
   tabIconRules: [],
 };
@@ -82,8 +84,14 @@ export class VerticalTabsViewSettingTab extends PluginSettingTab {
       this.display();
     });
 
+    createToggle(containerEl, 'Customize tab icon', '', this.settings.customizeTabIcon, (value) => {
+      this.settings.customizeTabIcon = value;
+      this.save();
+      this.display();
+    });
+
     // tab icon per condition
-    if (this.settings.showTabIcon) {
+    if (this.settings.customizeTabIcon) {
       // default icon
       const { previewIconWrapper, previewIcon, previewIconText } = this.createPreviewIcon(this.settings.defaultTabIcon);
 

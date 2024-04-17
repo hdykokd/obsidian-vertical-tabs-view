@@ -211,6 +211,18 @@
         tabIcon.removeClass('_hidden');
       }
 
+      if (!settings.customizeTabIcon) {
+        // @ts-expect-error
+        const _leaf = plugin.app.workspace.getLeafById(leaf.id)
+        const iconEl = _leaf.tabHeaderInnerIconEl.firstChild.cloneNode(true)
+        if (!iconEl) return;
+
+        if (iconEl) {
+          tabIcon.setChildrenInPlace([iconEl])
+          return
+        }
+      }
+
       const matchedConfig = getMatchedTabIconConfig(
         tabIconRules,
         getDirname(leaf),
