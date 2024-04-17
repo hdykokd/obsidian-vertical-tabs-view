@@ -18,8 +18,15 @@
   } as const;
 
   let plugin: VerticalTabsView;
-  let leaves: Leaf[];
-  let activeLeafId: string;
+  $: settings = plugin.settings
+  $: tabIconRules = settings.tabIconRules.slice().sort((a, b) => b.priority - a.priority)
+
+  let leaves: Leaf[] = []
+  $: leaves = leaves
+
+  let activeLeafId: string = "";
+  $: activeLeafId = activeLeafId
+
   store.plugin.subscribe((v) => {
     plugin = v;
   });
@@ -45,12 +52,6 @@
 
   export let viewContentId: string;
   export let updateView: Function;
-  let tabIconRules: TabIconRule[] = [];
-
-  const getTabIconRules = () => {
-    return plugin.settings.tabIconRules.sort((a, b) => b.priority - a.priority);
-  };
-  $: tabIconRules = getTabIconRules();
 
   const regexCompileCache: Record<string, RegExp> = {};
 
@@ -202,7 +203,8 @@
       const selector = `li[data-leaf-id="${leaf.id}"] .${VIEW_LIST_ITEM_TAB_ICON_CLASS}`;
       const tabIcon = document.querySelector(selector) as HTMLElement;
       if (!tabIcon) return;
-      if (!plugin.settings.showTabIcon) {
+
+      if (!settings.showTabIcon) {
         tabIcon.addClass('_hidden');
         return;
       } else {
@@ -218,9 +220,9 @@
       if (matchedConfig) {
         // override
         setIcon(tabIcon, matchedConfig.icon);
-      } else if (plugin.settings.defaultTabIcon) {
+      } else if (settings.defaultTabIcon) {
         // set default
-        setIcon(tabIcon, plugin.settings.defaultTabIcon);
+        setIcon(tabIcon, settings.defaultTabIcon);
       } else if (leaf.getViewState().type === 'markdown') {
         // remove
         setIcon(tabIcon, '');
@@ -381,7 +383,7 @@
       }}
     >
       <div class="vertical-tabs-view-list-item-left-container">
-        {#if plugin.settings.showCloseIcon}
+        {#if settings.showCloseIcon}
           <div
             class="vertical-tabs-view-list-item-close-btn vertical-tabs-view-list-item-icon"
             on:click={(e) => handleClickClose(e, leaf)}
@@ -391,21 +393,21 @@
         {/if}
         <div class="vertical-tabs-view-list-item-tab-icon vertical-tabs-view-list-item-icon" />
         <div class="vertical-tabs-view-list-item-name-container">
-          {#if plugin.settings.showDirectory}
+          {#if settings.showDirectory}
             <span class="vertical-tabs-view-list-item-dirname">{getDirname(leaf)}</span>
           {/if}
           <span class="vertical-tabs-view-list-item-title">{getFilename(leaf)}</span>
         </div>
       </div>
       <div class="vertical-tabs-view-list-item-right-container">
-        {#if plugin.settings.showPinIconIfNotPinned && !leaf.pinned}
+        {#if settings.showPinIconIfNotPinned && !leaf.pinned}
           <div
             class="vertical-tabs-view-list-item-icon vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-pin"
             on:click={(e) => handleClickPin(e, leaf)}
           >
             <Pin />
           </div>
-        {:else if plugin.settings.showPinnedIcon && leaf.pinned}
+        {:else if settings.showPinnedIcon && leaf.pinned}
           <div
             class="vertical-tabs-view-list-item-icon vertical-tabs-view-list-item-icon-pinned vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-pin"
             on:click={(e) => handleClickPinOff(e, leaf)}
