@@ -65,6 +65,7 @@ export class VerticalTabsViewView extends ItemView {
         const state = leaf.getViewState();
         if (state.type === VIEW_TYPE_VERTICAL_TABS) return;
         store.activeLeafId.set(leaf.id);
+        this.updateView();
       }),
     );
   }
@@ -116,6 +117,7 @@ export class VerticalTabsViewView extends ItemView {
   }
 
   updateView() {
+    store.plugin.set(this.plugin);
     const leaves = this.getSortedLeaves();
     leaves.forEach((l) => {
       l.on('pinned-change', () => {
