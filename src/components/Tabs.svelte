@@ -81,12 +81,36 @@
     return viewTitleEl?.getText() || file.name;
   };
 
+  const closeLeaf = (leaf: Leaf) => {
+    leaf.detach();
+
+    if (leaf.id === activeLeafId) {
+      if (leaf.id === leaves[0].id && leaves[1]) {
+        activeLeafId = leaves[1].id;
+      } else if (leaf.id === leaves.at(-1)?.id && leaves.at(-2)) {
+        activeLeafId = leaves.at(-2)!.id;
+      } else {
+        const index = state.tabIdToIndex[leaf.id];
+        if (leaves[index - 1]) {
+          activeLeafId = leaves[index - 1].id;
+        }
+      }
+    }
+  }
+
   const handleMouseDown = async (ev: MouseEvent, leaf: Leaf) => {
     ev.stopPropagation();
 
-    if (ev.button === 2) {
-      return; // right click
+    if (ev.button === 1) {
+      // middle click
+      closeLeaf(leaf);
+      return;
     }
+
+    if (ev.button === 2) {
+      return; // right click is handled by on:contextmenu
+    }
+
     if (ev.target instanceof SVGElement) {
       return; // icon
     }
@@ -103,20 +127,7 @@
     }
   };
   const handleClickClose = (ev: MouseEvent, leaf: Leaf) => {
-    leaf.detach();
-
-    if (leaf.id === activeLeafId) {
-      if (leaf.id === leaves[0].id && leaves[1]) {
-        activeLeafId = leaves[1].id;
-      } else if (leaf.id === leaves.at(-1)?.id && leaves.at(-2)) {
-        activeLeafId = leaves.at(-2)!.id;
-      } else {
-        const index = state.tabIdToIndex[leaf.id];
-        if (leaves[index - 1]) {
-          activeLeafId = leaves[index - 1].id;
-        }
-      }
-    }
+    closeLeaf(leaf);
   };
   const handleClickCloseOthers = (ev: MouseEvent, leaf: Leaf) => {
     leaves.forEach((l) => {
