@@ -23,7 +23,8 @@ export default class VerticalTabsView extends Plugin {
   }
 
   async loadSettings() {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    const currentSettings = await this.loadData();
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, currentSettings);
 
     // migrate
     if (
@@ -35,6 +36,11 @@ export default class VerticalTabsView extends Plugin {
       this.settings.tabIconRules = structuredClone(this.settings.tabIconConfigs);
       delete this.settings.tabIconConfigs;
       this.saveSettings(this.settings);
+    }
+
+    // backward compatibility
+    if (!('customizeTabIcon' in currentSettings) && currentSettings.tabIconRules.length > 0) {
+      this.settings.customizeTabIcon = true;
     }
   }
 
