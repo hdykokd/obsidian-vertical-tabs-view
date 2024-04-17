@@ -65,7 +65,8 @@ export class VerticalTabsViewView extends ItemView {
         const state = leaf.getViewState();
         if (state.type === VIEW_TYPE_VERTICAL_TABS) return;
         store.activeLeafId.set(leaf.id);
-        this.updateView();
+        // TODO: this break sorting but neccessary to follow changes in active leaf
+        // this.updateView();
       }),
     );
   }
