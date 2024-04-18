@@ -39,8 +39,10 @@ export default class VerticalTabsView extends Plugin {
     }
 
     // backward compatibility
-    if (!('customizeTabIcon' in currentSettings) && currentSettings.tabIconRules.length > 0) {
-      this.settings.customizeTabIcon = true;
+    if (currentSettings) {
+      if (!currentSettings.hasOwnProperty('customizeTabIcon') && currentSettings.tabIconRules.length > 0) {
+        this.settings.customizeTabIcon = true;
+      }
     }
   }
 
