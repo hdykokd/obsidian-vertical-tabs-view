@@ -60,13 +60,15 @@
 
   const getDirname = (leaf: Leaf) => {
     // @ts-expect-error
-    const file = leaf.view.file;
-    return file ? file.parent.path : '';
+    const file = leaf.view?.file;
+    if (!file) return ''
+    return file.parent?.path || '';
   };
 
   const getFilename = (leaf: Leaf) => {
     // @ts-expect-error
-    const file = leaf.view.file;
+    const file = leaf.view?.file;
+    if (!file) return ''
 
     // title
     // @ts-expect-error
@@ -160,7 +162,10 @@
     const leafIdSet = new Set(leafIds);
     for (const leaf of leaves) {
       if (leafIdSet.has(leaf.id)) {
-        await action(leaf);
+        const result = action(leaf);
+        if (result instanceof Promise) {
+          await result.catch(console.error)
+        }
         leafIdSet.delete(leaf.id);
       }
       if (leafIdSet.size === 0) {
@@ -171,12 +176,16 @@
     updateView.bind(view)();
   };
 
+  const closeLeaves = async (leaveIds: string[]) => {
+    await handleBulkAction(leaveIds, (leaf) => leaf.detach());
+  };
+
   const handleClickClose = (leaf: Leaf) => {
     closeLeaf(leaf);
   };
-  const handleClickCloseOthers = (leafIds: string[]) => {
+  const handleClickCloseOthers = async (leafIds: string[]) => {
     const targetLeafIds = leaves.filter((l) => !leafIds.includes(l.id)).map((l) => l.id);
-    closeLeaves(targetLeafIds);
+    await closeLeaves(targetLeafIds);
   };
   const handleClickCloseAllAbove = (leaf: Leaf) => {
     const index = state.tabIdToIndex[leaf.id];
@@ -386,7 +395,7 @@
     menu.addItem((item) => {
       const unselectedTabs = leaves.length - leafIds.length;
       return item
-        .setTitle(`Close others (${unselectedTabs} tnselected tabs)`)
+        .setTitle(`Close others (${unselectedTabs} unselected tabs)`)
         .setIcon('x')
         .onClick((e: MouseEvent) => {
           e.preventDefault();
@@ -479,7 +488,7 @@
     menu.addSeparator();
     menu.addItem((item) => {
       return item
-        .setTitle('Trash local')
+        .setTitle(`Trash ${titleTabs} to local`)
         .setIcon('trash')
         .onClick((e: MouseEvent) => {
           e.preventDefault();
@@ -493,7 +502,7 @@
     });
     menu.addItem((item) => {
       return item
-        .setTitle('Trash system')
+        .setTitle(`Trash ${titleTabs} to system`)
         .setIcon('trash')
         .onClick((e: MouseEvent) => {
           e.preventDefault();
@@ -507,7 +516,7 @@
     });
     menu.addItem((item) => {
       return item
-        .setTitle('Delete file')
+        .setTitle(`Delete ${titleTabs}`)
         .setIcon('trash-2')
         .onClick((e: MouseEvent) => {
           e.preventDefault();
