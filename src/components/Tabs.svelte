@@ -61,14 +61,14 @@
   const getDirname = (leaf: Leaf) => {
     // @ts-expect-error
     const file = leaf.view?.file;
-    if (!file) return ''
+    if (!file) return '';
     return file.parent?.path || '';
   };
 
   const getFilename = (leaf: Leaf) => {
     // @ts-expect-error
     const file = leaf.view?.file;
-    if (!file) return ''
+    if (!file) return '';
 
     // title
     // @ts-expect-error
@@ -101,7 +101,7 @@
         }
       }
     }
-  }
+  };
 
   const handleMouseDown = async (ev: MouseEvent, leaf: Leaf) => {
     ev.stopPropagation();
@@ -164,7 +164,7 @@
       if (leafIdSet.has(leaf.id)) {
         const result = action(leaf);
         if (result instanceof Promise) {
-          await result.catch(console.error)
+          await result.catch(console.error);
         }
         leafIdSet.delete(leaf.id);
       }
@@ -172,7 +172,7 @@
         updateView.bind(view)();
         return;
       }
-    };
+    }
     updateView.bind(view)();
   };
 
@@ -212,18 +212,22 @@
     updateView.bind(view)();
   };
   const handleClickBulkPin = (leafIds: string[], pinned: boolean) => {
-    return handleBulkAction(leafIds, (leaf) => leaf.setPinned(pinned))
+    return handleBulkAction(leafIds, (leaf) => leaf.setPinned(pinned));
   };
   const handleClickDelete = async (leaf: Leaf) => {
     // @ts-expect-error
-    await deleteVaultFile(plugin.app, leaf.view.file.path);
+    const file = leaf.view.file;
+    if (file.deleted) return;
+    await deleteVaultFile(plugin.app, file.path);
     updateView.bind(view)();
   };
   const handleClickBulkDelete = async (leafIds: string[]) => {
     return handleBulkAction(leafIds, async (leaf) => {
       // @ts-expect-error
-      await deleteVaultFile(plugin.app, leaf.view.file.path)
-    })
+      const file = leaf.view.file;
+      if (file.deleted) return;
+      await deleteVaultFile(plugin.app, file.path);
+    });
   };
   const handleClickTrashSystem = async (leaf: Leaf) => {
     // @ts-expect-error
@@ -374,6 +378,20 @@
     const isBulkEdit = selectedLeafIds.length > 1 && selectedLeafIds.includes(selectedLeaf.id);
     const leafIds = isBulkEdit ? selectedLeafIds : [selectedLeaf.id];
     const titleTabs = isBulkEdit ? `${leafIds.length} tabs` : `tab`;
+    const uniqueFilepaths = Array.from(
+      new Set(
+        leaves
+          .filter((l) => leafIds.includes(l.id))
+          .map((l) => {
+            // @ts-expect-error
+            const file = l.view.file;
+            const dirname = file.parent?.path || '';
+            const filename = file.name;
+            return `${dirname}${filename}`;
+          }),
+      ),
+    );
+    const titleFiles = isBulkEdit && uniqueFilepaths.length ? `${uniqueFilepaths.length} files` : `file`;
 
     const onClose = () => {
       selectedLeafIds = [];
@@ -425,8 +443,8 @@
     });
     menu.addSeparator();
     if (isBulkEdit) {
-      const pinnedLeaves: Leaf[] = []
-      const unpinnedLeaves : Leaf[] = []
+      const pinnedLeaves: Leaf[] = [];
+      const unpinnedLeaves: Leaf[] = [];
       leaves.forEach((l) => {
         if (l.pinned && leafIds.includes(l.id)) {
           pinnedLeaves.push(l);
@@ -438,13 +456,16 @@
       if (unpinnedLeaves.length) {
         menu.addItem((item) => {
           return item
-          .setTitle(`Pin ${unpinnedLeaves.length} tabs`)
-          .setIcon('pin')
-          .onClick((e: MouseEvent) => {
-            e.preventDefault();
-            handleClickBulkPin(unpinnedLeaves.map(l => l.id), true);
-            onClose();
-          });
+            .setTitle(`Pin ${unpinnedLeaves.length} tabs`)
+            .setIcon('pin')
+            .onClick((e: MouseEvent) => {
+              e.preventDefault();
+              handleClickBulkPin(
+                unpinnedLeaves.map((l) => l.id),
+                true,
+              );
+              onClose();
+            });
         });
       }
       if (pinnedLeaves.length) {
@@ -454,7 +475,10 @@
             .setIcon('pin-off')
             .onClick((e: MouseEvent) => {
               e.preventDefault();
-              handleClickBulkPin(pinnedLeaves.map(l => l.id), false);
+              handleClickBulkPin(
+                pinnedLeaves.map((l) => l.id),
+                false,
+              );
               onClose();
             });
         });
@@ -488,7 +512,7 @@
     menu.addSeparator();
     menu.addItem((item) => {
       return item
-        .setTitle(`Trash ${titleTabs} to local`)
+        .setTitle(`Trash ${titleFiles} to local`)
         .setIcon('trash')
         .onClick((e: MouseEvent) => {
           e.preventDefault();
@@ -502,7 +526,7 @@
     });
     menu.addItem((item) => {
       return item
-        .setTitle(`Trash ${titleTabs} to system`)
+        .setTitle(`Trash ${titleFiles} to system`)
         .setIcon('trash')
         .onClick((e: MouseEvent) => {
           e.preventDefault();
@@ -516,7 +540,7 @@
     });
     menu.addItem((item) => {
       return item
-        .setTitle(`Delete ${titleTabs}`)
+        .setTitle(`Delete ${titleFiles}`)
         .setIcon('trash-2')
         .onClick((e: MouseEvent) => {
           e.preventDefault();
