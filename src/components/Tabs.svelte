@@ -5,7 +5,7 @@
   import { X, Pin } from 'lucide-svelte';
   import store from '../store';
   import type VerticalTabsView from '../main';
-  import type { Leaf, TabIconRule } from '../types';
+  import type { Leaf } from '../types';
   import type { VerticalTabsViewView } from '../view';
   import { getMatchedTabIconConfig } from '../util/view';
   import { setActiveLeaf } from '../util/leaf';
@@ -18,14 +18,17 @@
   } as const;
 
   let plugin: VerticalTabsView;
-  $: settings = plugin.settings
-  $: tabIconRules = settings.tabIconRules.slice().sort((a, b) => b.priority - a.priority)
+  $: settings = plugin.settings;
+  $: tabIconRules = settings.tabIconRules.slice().sort((a, b) => b.priority - a.priority);
 
-  let leaves: Leaf[] = []
-  $: leaves = leaves
+  let leaves: Leaf[] = [];
+  $: leaves = leaves;
 
-  let activeLeafId: string = "";
-  $: activeLeafId = activeLeafId
+  let activeLeafId: string = '';
+  $: activeLeafId = activeLeafId;
+
+  let selectedLeafIds: string[] = [];
+  $: selectedLeafIds = selectedLeafIds;
 
   store.plugin.subscribe((v) => {
     plugin = v;
@@ -114,29 +117,68 @@
     if (ev.target instanceof SVGElement) {
       return; // icon
     }
-    await setActiveLeaf(plugin.app, leaf);
-    activeLeafId = leaf.id;
 
-    if ((plugin.app as unknown as { isMobile: boolean }).isMobile) {
-      if (!plugin.app.workspace.leftSplit?.collapsed) {
-        plugin.app.workspace.leftSplit.collapse();
+    if (ev.shiftKey) {
+      const clickedLeafIndex = state.tabIdToIndex[leaf.id];
+      const activeLeafIndex = state.tabIdToIndex[activeLeafId];
+      const start = Math.min(clickedLeafIndex, activeLeafIndex);
+      const end = Math.max(clickedLeafIndex, activeLeafIndex);
+      const newSelectedLeafIds: string[] = [];
+      for (let i = start; i <= end; i++) {
+        const leaf = leaves[i];
+        if (leaf) {
+          newSelectedLeafIds.push(leaf.id);
+        }
       }
-      if (!plugin.app.workspace.rightSplit?.collapsed) {
-        plugin.app.workspace.rightSplit.collapse();
+      selectedLeafIds = Array.from(new Set([...selectedLeafIds, ...newSelectedLeafIds]));
+    } else if (ev.metaKey) {
+      if (!selectedLeafIds.length) {
+        selectedLeafIds = [activeLeafId];
+      }
+      if (!selectedLeafIds.includes(leaf.id)) {
+        selectedLeafIds = [...selectedLeafIds, leaf.id];
+      } else {
+        selectedLeafIds = selectedLeafIds.filter((id) => id !== leaf.id);
+      }
+    } else {
+      selectedLeafIds = [];
+      await setActiveLeaf(plugin.app, leaf);
+      activeLeafId = leaf.id;
+
+      if ((plugin.app as unknown as { isMobile: boolean }).isMobile) {
+        if (!plugin.app.workspace.leftSplit?.collapsed) {
+          plugin.app.workspace.leftSplit.collapse();
+        }
+        if (!plugin.app.workspace.rightSplit?.collapsed) {
+          plugin.app.workspace.rightSplit.collapse();
+        }
       }
     }
   };
-  const handleClickClose = (ev: MouseEvent, leaf: Leaf) => {
+
+  const handleBulkAction = async (leafIds: string[], action: (leaf: Leaf) => void | Promise<void>) => {
+    const leafIdSet = new Set(leafIds);
+    for (const leaf of leaves) {
+      if (leafIdSet.has(leaf.id)) {
+        await action(leaf);
+        leafIdSet.delete(leaf.id);
+      }
+      if (leafIdSet.size === 0) {
+        updateView.bind(view)();
+        return;
+      }
+    };
+    updateView.bind(view)();
+  };
+
+  const handleClickClose = (leaf: Leaf) => {
     closeLeaf(leaf);
   };
-  const handleClickCloseOthers = (ev: MouseEvent, leaf: Leaf) => {
-    leaves.forEach((l) => {
-      if (l.id === leaf.id) return;
-      l.detach();
-    });
-    activeLeafId = leaf.id;
+  const handleClickCloseOthers = (leafIds: string[]) => {
+    const targetLeafIds = leaves.filter((l) => !leafIds.includes(l.id)).map((l) => l.id);
+    closeLeaves(targetLeafIds);
   };
-  const handleClickCloseToTop = (ev: MouseEvent, leaf: Leaf) => {
+  const handleClickCloseAllAbove = (leaf: Leaf) => {
     const index = state.tabIdToIndex[leaf.id];
     const activeLeafIndex = state.tabIdToIndex[activeLeafId];
     if (0 <= activeLeafIndex && activeLeafIndex < index) {
@@ -146,7 +188,7 @@
       l.detach();
     });
   };
-  const handleClickCloseToBottom = (ev: MouseEvent, leaf: Leaf) => {
+  const handleClickCloseAllBelow = (leaf: Leaf) => {
     const index = state.tabIdToIndex[leaf.id];
     const activeLeafIndex = state.tabIdToIndex[activeLeafId];
     if (index + 1 <= activeLeafIndex && activeLeafIndex <= leaves.length - 1) {
@@ -156,28 +198,45 @@
       l.detach();
     });
   };
-  const handleClickPin = (ev: MouseEvent, leaf: Leaf) => {
-    leaf.setPinned(true);
+  const handleClickPin = (leaf: Leaf, pinned: boolean) => {
+    leaf.setPinned(pinned);
     updateView.bind(view)();
   };
-  const handleClickPinOff = (ev: MouseEvent, leaf: Leaf) => {
-    leaf.setPinned(false);
-    updateView.bind(view)();
+  const handleClickBulkPin = (leafIds: string[], pinned: boolean) => {
+    return handleBulkAction(leafIds, (leaf) => leaf.setPinned(pinned))
   };
-  const handleClickDelete = async (ev: MouseEvent, leaf: Leaf) => {
+  const handleClickDelete = async (leaf: Leaf) => {
     // @ts-expect-error
     await deleteVaultFile(plugin.app, leaf.view.file.path);
     updateView.bind(view)();
   };
-  const handleClickTrashSystem = async (ev: MouseEvent, leaf: Leaf) => {
+  const handleClickBulkDelete = async (leafIds: string[]) => {
+    return handleBulkAction(leafIds, async (leaf) => {
+      // @ts-expect-error
+      await deleteVaultFile(plugin.app, leaf.view.file.path)
+    })
+  };
+  const handleClickTrashSystem = async (leaf: Leaf) => {
     // @ts-expect-error
     await trashVaultFile(plugin.app, leaf.view.file.path, true);
     updateView.bind(view)();
   };
-  const handleClickTrashLocal = async (ev: MouseEvent, leaf: Leaf) => {
+  const handleClickBulkTrashSystem = async (leafIds: string[]) => {
+    return handleBulkAction(leafIds, async (leaf) => {
+      // @ts-expect-error
+      await trashVaultFile(plugin.app, leaf.view.file.path, true);
+    });
+  };
+  const handleClickTrashLocal = async (leaf: Leaf) => {
     // @ts-expect-error
     await trashVaultFile(plugin.app, leaf.view.file.path, false);
     updateView.bind(view)();
+  };
+  const handleClickBulkTrashLocal = async (leafIds: string[]) => {
+    return handleBulkAction(leafIds, async (leaf) => {
+      // @ts-expect-error
+      await trashVaultFile(plugin.app, leaf.view.file.path, false);
+    });
   };
 
   function scrollIntoActiveListItem() {
@@ -223,14 +282,14 @@
       }
 
       if (!settings.customizeTabIcon) {
+        const _leaf = plugin.app.workspace.getLeafById(leaf.id);
         // @ts-expect-error
-        const _leaf = plugin.app.workspace.getLeafById(leaf.id)
-        const iconEl = _leaf.tabHeaderInnerIconEl.firstChild.cloneNode(true)
+        const iconEl = _leaf.tabHeaderInnerIconEl.firstChild.cloneNode(true);
         if (!iconEl) return;
 
         if (iconEl) {
-          tabIcon.setChildrenInPlace([iconEl])
-          return
+          tabIcon.setChildrenInPlace([iconEl]);
+          return;
         }
       }
 
@@ -302,64 +361,120 @@
 
   const createMenu = (selectedLeaf: Leaf) => {
     const menu = new Menu();
+
+    const isBulkEdit = selectedLeafIds.length > 1 && selectedLeafIds.includes(selectedLeaf.id);
+    const leafIds = isBulkEdit ? selectedLeafIds : [selectedLeaf.id];
+    const titleTabs = isBulkEdit ? `${leafIds.length} tabs` : `tab`;
+
+    const onClose = () => {
+      selectedLeafIds = [];
+    };
+
     menu.addItem((item) => {
       return item
-        .setTitle('Close')
+        .setTitle(`Close ${titleTabs}`)
         .setIcon('x')
         .onClick((e: MouseEvent) => {
           e.preventDefault();
-          handleClickClose(e, selectedLeaf);
+          if (isBulkEdit) {
+            closeLeaves(leafIds);
+          } else {
+            closeLeaf(selectedLeaf);
+          }
+        });
+    });
+    menu.addItem((item) => {
+      const unselectedTabs = leaves.length - leafIds.length;
+      return item
+        .setTitle(`Close others (${unselectedTabs} tnselected tabs)`)
+        .setIcon('x')
+        .onClick((e: MouseEvent) => {
+          e.preventDefault();
+          handleClickCloseOthers(leafIds);
+          onClose();
         });
     });
     menu.addItem((item) => {
       return item
-        .setTitle('Close others')
+        .setTitle('Close all tabs above')
         .setIcon('x')
         .onClick((e: MouseEvent) => {
           e.preventDefault();
-          handleClickCloseOthers(e, selectedLeaf);
+          handleClickCloseAllAbove(selectedLeaf);
+          onClose();
         });
     });
     menu.addItem((item) => {
       return item
-        .setTitle('Close to the top')
+        .setTitle('Close all tabs below')
         .setIcon('x')
         .onClick((e: MouseEvent) => {
           e.preventDefault();
-          handleClickCloseToTop(e, selectedLeaf);
-        });
-    });
-    menu.addItem((item) => {
-      return item
-        .setTitle('Close to the bottom')
-        .setIcon('x')
-        .onClick((e: MouseEvent) => {
-          e.preventDefault();
-          handleClickCloseToBottom(e, selectedLeaf);
+          handleClickCloseAllBelow(selectedLeaf);
+          onClose();
         });
     });
     menu.addSeparator();
-    if (selectedLeaf && !selectedLeaf.pinned) {
-      menu.addItem((item) => {
-        return item
-          .setTitle('Pin')
+    if (isBulkEdit) {
+      const pinnedLeaves: Leaf[] = []
+      const unpinnedLeaves : Leaf[] = []
+      leaves.forEach((l) => {
+        if (l.pinned && leafIds.includes(l.id)) {
+          pinnedLeaves.push(l);
+        } else if (!l.pinned && leafIds.includes(l.id)) {
+          unpinnedLeaves.push(l);
+        }
+      });
+
+      if (unpinnedLeaves.length) {
+        menu.addItem((item) => {
+          return item
+          .setTitle(`Pin ${unpinnedLeaves.length} tabs`)
           .setIcon('pin')
           .onClick((e: MouseEvent) => {
             e.preventDefault();
-            handleClickPin(e, selectedLeaf);
+            handleClickBulkPin(unpinnedLeaves.map(l => l.id), true);
+            onClose();
           });
-      });
-    }
-    if (selectedLeaf && selectedLeaf.pinned) {
-      menu.addItem((item) => {
-        return item
-          .setTitle('Unpin')
-          .setIcon('pin-off')
-          .onClick((e: MouseEvent) => {
-            e.preventDefault();
-            handleClickPinOff(e, selectedLeaf);
-          });
-      });
+        });
+      }
+      if (pinnedLeaves.length) {
+        menu.addItem((item) => {
+          return item
+            .setTitle(`Unpin ${pinnedLeaves.length} tabs`)
+            .setIcon('pin-off')
+            .onClick((e: MouseEvent) => {
+              e.preventDefault();
+              handleClickBulkPin(pinnedLeaves.map(l => l.id), false);
+              onClose();
+            });
+        });
+      }
+    } else {
+      if (!selectedLeaf.pinned) {
+        menu.addItem((item) => {
+          return item
+            .setTitle(`Pin`)
+            .setIcon('pin')
+            .onClick((e: MouseEvent) => {
+              e.preventDefault();
+              handleClickPin(selectedLeaf, true);
+              onClose();
+            });
+        });
+      }
+      if (selectedLeaf.pinned) {
+        menu.addItem((item) => {
+          return item
+            .setTitle(`Unpin`)
+            .setIcon('pin-off')
+            .onClick((e: MouseEvent) => {
+              e.preventDefault();
+              handleClickPin(selectedLeaf, false);
+              onClose();
+            });
+        });
+      }
     }
     menu.addSeparator();
     menu.addItem((item) => {
@@ -368,7 +483,12 @@
         .setIcon('trash')
         .onClick((e: MouseEvent) => {
           e.preventDefault();
-          handleClickTrashLocal(e, selectedLeaf);
+          if (isBulkEdit) {
+            handleClickBulkTrashLocal(leafIds);
+          } else {
+            handleClickTrashLocal(selectedLeaf);
+          }
+          onClose();
         });
     });
     menu.addItem((item) => {
@@ -377,7 +497,12 @@
         .setIcon('trash')
         .onClick((e: MouseEvent) => {
           e.preventDefault();
-          handleClickTrashSystem(e, selectedLeaf);
+          if (isBulkEdit) {
+            handleClickBulkTrashSystem(leafIds);
+          } else {
+            handleClickTrashSystem(selectedLeaf);
+          }
+          onClose();
         });
     });
     menu.addItem((item) => {
@@ -386,9 +511,15 @@
         .setIcon('trash-2')
         .onClick((e: MouseEvent) => {
           e.preventDefault();
-          handleClickDelete(e, selectedLeaf);
+          if (isBulkEdit) {
+            handleClickBulkDelete(leafIds);
+          } else {
+            handleClickDelete(selectedLeaf);
+          }
+          onClose();
         });
     });
+
     return menu;
   };
 </script>
@@ -398,6 +529,7 @@
     <li
       data-leaf-id={leaf.id}
       class="vertical-tabs-view-list-item"
+      class:selected={selectedLeafIds.includes(leaf.id)}
       class:focused={leaf.id === activeLeafId}
       on:mousedown={(e) => handleMouseDown(e, leaf)}
       on:contextmenu={(e) => {
@@ -409,7 +541,7 @@
         {#if settings.showCloseIcon}
           <div
             class="vertical-tabs-view-list-item-close-btn vertical-tabs-view-list-item-icon"
-            on:click={(e) => handleClickClose(e, leaf)}
+            on:click={(e) => handleClickClose(leaf)}
           >
             <X />
           </div>
@@ -426,14 +558,14 @@
         {#if settings.showPinIconIfNotPinned && !leaf.pinned}
           <div
             class="vertical-tabs-view-list-item-icon vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-pin"
-            on:click={(e) => handleClickPin(e, leaf)}
+            on:click={() => handleClickPin(leaf, true)}
           >
             <Pin />
           </div>
         {:else if settings.showPinnedIcon && leaf.pinned}
           <div
             class="vertical-tabs-view-list-item-icon vertical-tabs-view-list-item-icon-pinned vertical-tabs-view-list-item-pin-btn vertical-tabs-view-list-item-pin-btn-pin"
-            on:click={(e) => handleClickPinOff(e, leaf)}
+            on:click={() => handleClickPin(leaf, false)}
           >
             <Pin />
           </div>

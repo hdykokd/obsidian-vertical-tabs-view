@@ -23,7 +23,7 @@ export default class VerticalTabsView extends Plugin {
   }
 
   async loadSettings() {
-    const currentSettings = await this.loadData();
+    const currentSettings: VerticalTabsViewSettings | null = await this.loadData();
     this.settings = Object.assign({}, DEFAULT_SETTINGS, currentSettings);
 
     // migrate

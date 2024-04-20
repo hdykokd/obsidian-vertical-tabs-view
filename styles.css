@@ -1,6 +1,6 @@
 #vertical-tabs-view-content {
   padding: 0;
-  margin: 2px;
+  /* margin: 2px; */
 }
 
 ul.vertical-tabs-view-list {
@@ -19,7 +19,7 @@ ul.vertical-tabs-view-list {
   color: var(--tab-text-color);
   font-size: var(--tab-font-size);
   font-weight: var(--tab-font-weight);
-  padding: 2px 0 2px 2px;
+  padding: 2px;
   width: 100%;
   min-height: 2.5em;
   border-radius: var(--tab-radius);
@@ -30,6 +30,10 @@ ul.vertical-tabs-view-list {
 .vertical-tabs-view-list li.focused {
   color: var(--tab-text-color-focused-active-current);
   background-color: var(--tab-background-active);
+}
+.vertical-tabs-view-list li.vertical-tabs-view-list-item.selected {
+  border: 2px dashed var(--tab-text-color-focused-highlighted);
+  margin: 1px 0;
 }
 
 .vertical-tabs-view-list li.vertical-tabs-view-list-item:hover {
@@ -106,11 +110,11 @@ ul.vertical-tabs-view-list {
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn {
-  margin-right: 0.5em;
+  margin-right: 0.25em;
 }
 
 .vertical-tabs-view-list li .vertical-tabs-view-list-item-pin-btn-pin {
-  opacity: .75
+  opacity: 0.75;
 }
 
 .vertical-tabs-view-list-item-close-btn > svg,
