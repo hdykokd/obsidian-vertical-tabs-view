@@ -59,31 +59,44 @@
   const regexCompileCache: Record<string, RegExp> = {};
 
   const getDirname = (leaf: Leaf) => {
+    const viewState = leaf.getViewState();
+    const state = viewState.state;
+    if (state && typeof state.file === 'string') {
+      // Extract the directory path from the file path
+      const filePath = state.file;
+      const dirPath = filePath.substring(0, filePath.lastIndexOf('/'));
+      return dirPath || '';
+    }
+
+    // Fallback to leaf.view.file if available
     // @ts-expect-error
     const file = leaf.view?.file;
-    if (!file) return '';
-    return file.parent?.path || '';
+    if (file && file.parent) {
+      return file.parent.path || '';
+    }
+
+    return '';
   };
 
   const getFilename = (leaf: Leaf) => {
+    const viewState = leaf.getViewState();
+    const state = viewState.state;
+    if (state && typeof state.file === 'string') {
+      const filePath = state.file;
+      const fileNameWithExtension = filePath.split(/[\\/]/).pop() || '';
+      const fileName = fileNameWithExtension.replace(/\.[^/.]+$/, ''); // Remove file extension
+      return fileName;
+    }
+
+    // Fallback to leaf.view.file if available
     // @ts-expect-error
     const file = leaf.view?.file;
-    if (!file) return '';
+    if (file) {
+      const fileName = file.name.replace(/\.[^/.]+$/, ''); // Remove file extension
+      return fileName;
+    }
 
-    // title
-    // @ts-expect-error
-    const viewTitleEls = (leaf.view.titleContainerEl as HTMLElement).querySelectorAll(
-      // @ts-expect-error
-      `.${(leaf.view.titleEl as HTMLElement).className}`,
-    );
-    const viewTitleEl = Array.from(viewTitleEls).find((el) => {
-      // A workaround for the issue where pinning resets the title
-      // modifications made by the "obsidian-front-matter-title" plugin.
-      // https://github.com/snezhig/obsidian-front-matter-title/issues/149
-      if (el.hasAttribute('hidden')) return;
-      return el;
-    });
-    return viewTitleEl?.getText() || file.name;
+    return leaf.getDisplayText() || '';
   };
 
   const closeLeaf = (leaf: Leaf) => {
