@@ -1,3 +1,9 @@
+> [!IMPORTANT]
+> This plugin is no longer maintained.
+> 
+> We recommend checking out [Vertical Tabs for Obsidian](https://github.com/oxdc/obsidian-vertical-tabs), which is an excellent alternative that offers similar functionality with additional features and active development.
+---
+
 # Obsidian Vertical Tabs View
 
 ## Features
